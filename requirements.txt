@@ -1,7 +1,7 @@
 certifi==2018.4.16
 chardet==3.0.4
 click==6.7
-Django>=2.0.8
+Django>=2.2.6
 dnspython==1.15.0
 dnspython3==1.15.0
 idna==2.7
@@ -13,3 +13,7 @@ requests==2.19.1
 six==1.11.0
 urllib3==1.23
 nbt==1.5.0
+cos-python-sdk-v5==1.6.4
+djangorestframework==3.7.7
+# pymysql==0.9.3
+mysqlclient==1.4.4
