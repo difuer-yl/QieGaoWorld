@@ -106,8 +106,9 @@ def login_verify(request):
         #     return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
 
         user = User.objects.filter(username=username)
-        if len(user) == 0:
-            obj = User(username=username, password=password, register_time=int(time.time()))
+        print(user)
+        if user ==None :
+            obj = User(username=username, password=password, register_time=(time.time()))
             obj.save()
             user = User.objects.filter(username=username, password=password)
         user = user[0]
@@ -116,7 +117,7 @@ def login_verify(request):
         user.uuid = uuid_
         hashlib.md5()
         # user.nickname = nickname
-        user.save()
+        # user.save()
     else:
         user = User.objects.filter(username=username, password=password)
         if len(user) == 0:
@@ -129,7 +130,7 @@ def login_verify(request):
     m2.update(md5_str.encode('utf-8'))   
     user.token=m2.hexdigest()
 
-    user.save()
+    # user.save()
 
     # 登录成功后
     request.session["is_login"] = True
