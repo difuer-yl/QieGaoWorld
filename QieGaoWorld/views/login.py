@@ -13,6 +13,8 @@ import hashlib, uuid
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.db import connection
+
 
 from QieGaoWorld import parameter
 from QieGaoWorld import settings
@@ -47,41 +49,61 @@ def login_verify(request):
     password = str(request.POST.get("password", None))
     password_md5 = hashlib.md5()   
     password_md5.update(password.encode('utf-8'))   
-
+    cursor=connection.cursor()
 
     if ON_SERVER:
-        with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
-            plays = f.read()
-            if "- " + username.lower() not in plays:
-                return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
-                # return Response(dialog('failed', 'danger', '您不在白名单'))
-        with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
-            plays = json.loads(f.read())
-            s = "%"
-            for b in plays:
-                s += b['name'] + "%"
-            if "%" + username + "%" in s:
-                return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
-        try:
-            user_url = "/plugins/ksptooi/fastlogin/database/"
-            url = parameter.SPIGOT_PATH + user_url
-            with open(url + username.lower() + ".gd", "r") as f:
-                user = f.readline().strip()
-                passwd = f.readline().strip()
 
-                if passwd =='@Version=6':
-                    f.readline().strip()
-                    user = f.readline().strip()
-                    passwd = f.readline().strip()
-                    _username=username.lower()
-                else:
-                    _username=username
-            # user = User.objects.filter(username=username, password=password)
-        except IOError:
+        cursor.execute("select * from WhiteList where ids='"+username.lower()+"'")
+        # with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
+        #     plays = f.read()
+        #     if "- " + username.lower() not in plays:
+        #         return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
+        #         # return Response(dialog('failed', 'danger', '您不在白名单'))
+        row=cursor.fetchone()
+        if row == None :
+            return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
+
+        cursor.execute("select * from banned_players where name='"+username+"'")
+        row=cursor.fetchone()
+        if row != None:
+            return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
+
+        # with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
+        #     plays = json.loads(f.read())
+        #     s = "%"
+        #     for b in plays:
+        #         s += b['name'] + "%"
+        #     if "%" + username + "%" in s:
+        #         return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
+
+        cursor.execute("select * from playertable where playername='"+username+"'")
+        row=cursor.fetchone()
+        if row ==None:
             return HttpResponse(dialog('failed', 'danger', '该账号不存在'))
-
-        if "playername=" + _username != user or ("password=" + password != passwd and "password=" + password_md5.hexdigest() != passwd ):
+        else :
+            passwd=row[1]
+        if ( password != passwd and  password_md5.hexdigest() != passwd ):
             return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
+        # try:
+        #     user_url = "/plugins/ksptooi/fastlogin/database/"
+        #     url = parameter.SPIGOT_PATH + user_url
+        #     with open(url + username.lower() + ".gd", "r") as f:
+        #         user = f.readline().strip()
+        #         passwd = f.readline().strip()
+
+        #         if passwd =='@Version=6':
+        #             f.readline().strip()
+        #             user = f.readline().strip()
+        #             passwd = f.readline().strip()
+        #             _username=username.lower()
+        #         else:
+        #             _username=username
+        #     # user = User.objects.filter(username=username, password=password)
+        # except IOError:
+        #     return HttpResponse(dialog('failed', 'danger', '该账号不存在'))
+
+        # if "playername=" + _username != user or ("password=" + password != passwd and "password=" + password_md5.hexdigest() != passwd ):
+        #     return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
 
         user = User.objects.filter(username=username)
         if len(user) == 0:
@@ -90,10 +112,10 @@ def login_verify(request):
             user = User.objects.filter(username=username, password=password)
         user = user[0]
         uuid_ = get_uuid_from_name(username)  # 这里uuid_防止与uuid库名字冲突
-        nickname = get_nickname_from_uuid(uuid_)
+        # nickname = get_nickname_from_uuid(uuid_)
         user.uuid = uuid_
         hashlib.md5()
-        user.nickname = nickname
+        # user.nickname = nickname
         user.save()
     else:
         user = User.objects.filter(username=username, password=password)
@@ -121,24 +143,23 @@ def login_verify(request):
     request.session['avatar'] = user.avatar
     request.session.set_expiry(3600)  # 1小时有效期
 
-    if ON_SERVER:
-        with open("../ops.json", "r") as f:
-            ops = f.read()
-            a = (json.loads(ops))
-            s = "%"
-            for b in a:
-                s += b['name'] + "%"
-            if username in s:
-                request.session['permissions'] = settings.OP_PERMISSIONS
-                # request.session['permissions'] = user.get_all_permissions()
-            else:
-                if username == "Junyi99":  # 硬核编码（hhh
-                    request.session['permissions'] = settings.OP_PERMISSIONS
-                else:
-                    request.session['permissions'] = user.permissions
-    else:
-        request.session['permissions'] = user.permissions
-    print(1111)
+    # if ON_SERVER:
+    #     with open("../ops.json", "r") as f:
+    #         ops = f.read()
+    #         a = (json.loads(ops))
+    #         s = "%"
+    #         for b in a:
+    #             s += b['name'] + "%"
+    #         if username in s:
+    #             request.session['permissions'] = settings.OP_PERMISSIONS
+    #             # request.session['permissions'] = user.get_all_permissions()
+    #         else:
+    #             if username == "Junyi99":  # 硬核编码（hhh
+    #                 request.session['permissions'] = settings.OP_PERMISSIONS
+    #             else:
+    #                 request.session['permissions'] = user.permissions
+    # else:
+    request.session['permissions'] = user.permissions
     return HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}))
 
 def get_uuid_from_name(name):
