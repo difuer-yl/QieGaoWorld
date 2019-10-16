@@ -3,8 +3,8 @@ services:
   app:
     restart: always
     build: .  # '点'代表当前目录
-    command: "python3 manage.py runserver 0.0.0.0:81"
+    command: "python3 manage.py runserver 0.0.0.0:80"
     volumes:
       - .:/code
     ports:
-      - "81:81"
+      - "80:80"
