@@ -2,8 +2,8 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-08-19 18:11:58
-@LastEditors: Please set LastEditors
+@LastEditTime: 2019-10-17 03:38:37
+@LastEditors: chiaki
 '''
 import json
 import logging
@@ -193,7 +193,8 @@ def auto_login(request):
     token = str(request.GET.get("token", None))
     
 
-    user = User.objects.filter(token_expired_time__gte=int(time.time()), token=token)
+    # user = User.objects.filter(token_expired_time__gte=int(time.time()), token=token)
+    user = User.objects.filter(token=token)
     if len(user) == 0:
         return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
     else:
