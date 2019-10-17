@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-10-17 03:38:37
+@LastEditTime: 2019-10-17 23:40:32
 @LastEditors: chiaki
 '''
 import json
@@ -124,13 +124,13 @@ def login_verify(request):
             return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
         else:
             user = user[0]
-    user.token_expired_time=int(time.time())
+    # user.token_expired_time=int(time.time())
     md5_str=str(time.time())+user.username
     m2 = hashlib.md5()   
     m2.update(md5_str.encode('utf-8'))   
     user.token=m2.hexdigest()
 
-    # user.save()
+    user.save()
 
     # 登录成功后
     request.session["is_login"] = True
