@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-10-17 23:40:32
+@LastEditTime: 2019-10-17 23:42:34
 @LastEditors: chiaki
 '''
 import json
@@ -128,9 +128,9 @@ def login_verify(request):
     md5_str=str(time.time())+user.username
     m2 = hashlib.md5()   
     m2.update(md5_str.encode('utf-8'))   
-    user.token=m2.hexdigest()
+    # user.token=m2.hexdigest()
 
-    user.save()
+    # user.save()
 
     # 登录成功后
     request.session["is_login"] = True
