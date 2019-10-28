@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-10-28 15:37:44
+@LastEditTime: 2019-10-28 16:06:41
 @LastEditors: chiaki
 '''
 import json
@@ -146,7 +146,7 @@ def login_verify(request):
     request.session.set_expiry(3600)  # 1小时有效期
 
     if ON_SERVER:
-        with open("../ops.json", "r") as f:
+        with open(parameter.SPIGOT_PATH+"/ops.json", "r") as f:
             ops = f.read()
             a = (json.loads(ops))
             s = "%"
