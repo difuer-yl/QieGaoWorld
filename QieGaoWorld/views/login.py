@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-10-17 23:42:34
+@LastEditTime: 2019-10-28 15:37:44
 @LastEditors: chiaki
 '''
 import json
@@ -53,28 +53,29 @@ def login_verify(request):
 
     if ON_SERVER:
 
-        cursor.execute("select * from WhiteList where ids='"+username.lower()+"'")
-        # with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
-        #     plays = f.read()
-        #     if "- " + username.lower() not in plays:
-        #         return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
-        #         # return Response(dialog('failed', 'danger', '您不在白名单'))
-        row=cursor.fetchone()
-        if row == None :
-            return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
+        # cursor.execute("select * from WhiteList where ids='"+username.lower()+"'")
+        # row=cursor.fetchone()
+        # if row == None :
+        #     return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
 
-        cursor.execute("select * from banned_players where name='"+username+"'")
-        row=cursor.fetchone()
-        if row != None:
-            return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
+        # cursor.execute("select * from banned_players where name='"+username+"'")
+        # row=cursor.fetchone()
+        # if row != None:
+        #     return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
+        with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
+            plays = f.read()
+            if "- " + username.lower() not in plays:
+                return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
+                # return Response(dialog('failed', 'danger', '您不在白名单'))
+        
 
-        # with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
-        #     plays = json.loads(f.read())
-        #     s = "%"
-        #     for b in plays:
-        #         s += b['name'] + "%"
-        #     if "%" + username + "%" in s:
-        #         return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
+        with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
+            plays = json.loads(f.read())
+            s = "%"
+            for b in plays:
+                s += b['name'] + "%"
+            if "%" + username + "%" in s:
+                return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
 
         cursor.execute("select * from playertable where playername='"+username+"'")
         row=cursor.fetchone()
@@ -144,23 +145,23 @@ def login_verify(request):
     request.session['avatar'] = user.avatar
     request.session.set_expiry(3600)  # 1小时有效期
 
-    # if ON_SERVER:
-    #     with open("../ops.json", "r") as f:
-    #         ops = f.read()
-    #         a = (json.loads(ops))
-    #         s = "%"
-    #         for b in a:
-    #             s += b['name'] + "%"
-    #         if username in s:
-    #             request.session['permissions'] = settings.OP_PERMISSIONS
-    #             # request.session['permissions'] = user.get_all_permissions()
-    #         else:
-    #             if username == "Junyi99":  # 硬核编码（hhh
-    #                 request.session['permissions'] = settings.OP_PERMISSIONS
-    #             else:
-    #                 request.session['permissions'] = user.permissions
-    # else:
-    request.session['permissions'] = user.permissions
+    if ON_SERVER:
+        with open("../ops.json", "r") as f:
+            ops = f.read()
+            a = (json.loads(ops))
+            s = "%"
+            for b in a:
+                s += b['name'] + "%"
+            if username in s:
+                request.session['permissions'] = settings.OP_PERMISSIONS
+                # request.session['permissions'] = user.get_all_permissions()
+            else:
+                if username == "Junyi99":  # 硬核编码（hhh
+                    request.session['permissions'] = settings.OP_PERMISSIONS
+                else:
+                    request.session['permissions'] = user.permissions
+    else:
+        request.session['permissions'] = user.permissions
     return HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}))
 
 def get_uuid_from_name(name):
