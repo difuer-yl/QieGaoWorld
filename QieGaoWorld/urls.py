@@ -21,6 +21,7 @@ from .views import login, logout
 from .views import avatar, police
 from .views import declare, register,ops,system,wenjuan,skull,society,task,user,signin,cms,api
 from .views import announcement
+from graphene_django.views import GraphQLView
 
 
 urlpatterns = [
@@ -78,4 +79,5 @@ urlpatterns = [
     path("signin/<str:s>", signin.url),
     path("cms/<str:s>", cms.url),
     path("api/<str:s>", api.url),
+    path("graphql", GraphQLView.as_view(graphiql=True)),
 ]

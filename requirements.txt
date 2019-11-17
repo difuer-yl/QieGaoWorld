@@ -17,3 +17,4 @@ cos-python-sdk-v5==1.6.4
 djangorestframework==3.7.7
 # pymysql==0.9.3
 mysqlclient==1.4.4
+graphene>=2.0
