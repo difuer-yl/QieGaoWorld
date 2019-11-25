@@ -518,7 +518,7 @@ def maps_add(request):
 
         nbt['data']['colors'].value=(map_item)
         
-        number=get_map_id(path,number)
+        number=get_map_id(path,number+1)
         if not number:
             return HttpResponse(dialog('failed', 'success', '编号生成失败'))
         im2=Image.new("RGB",(128,128))
