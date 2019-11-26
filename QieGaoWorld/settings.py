@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'QieGaoWorld',
-    'graphene_django',
+    # 'graphene_django',
 ]
 AUTH_USER_MODEL = 'QieGaoWorld.User'
 MIDDLEWARE = [
