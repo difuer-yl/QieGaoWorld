@@ -1,3 +1,10 @@
+'''
+@Author: chiaki
+@Date: 2019-11-25 23:21:33
+@LastEditors: chiaki
+@LastEditTime: 2019-11-26 15:40:14
+@Description: 
+'''
 """QieGaoWorld URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -21,7 +28,7 @@ from .views import login, logout
 from .views import avatar, police
 from .views import declare, register,ops,system,wenjuan,skull,society,task,user,signin,cms,api
 from .views import announcement
-from graphene_django.views import GraphQLView
+# from graphene_django.views import GraphQLView
 
 
 urlpatterns = [
@@ -79,5 +86,5 @@ urlpatterns = [
     path("signin/<str:s>", signin.url),
     path("cms/<str:s>", cms.url),
     path("api/<str:s>", api.url),
-    path("graphql", GraphQLView.as_view(graphiql=True)),
+    # path("graphql", GraphQLView.as_view(graphiql=True)),
 ]
