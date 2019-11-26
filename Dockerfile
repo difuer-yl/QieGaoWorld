@@ -11,6 +11,8 @@ WORKDIR /code
 RUN pip install pip -U
 # 将 requirements.txt 复制到容器的 code 目录
 ADD requirements.txt /code/
+#使用pip源镜像
+ADD pip.conf /etc/pip.conf
 # 安装库
 RUN pip install -r requirements.txt
 # 将当前目录复制到容器的 code 目录
