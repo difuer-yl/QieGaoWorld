@@ -38,7 +38,7 @@
                                 <br>
                                 <div uk-form-custom>
                                     <input type="file" name="file" accept="image/*">
-                                    <span class="uk-link">选择图片</span>
+                                    <span class="uk-link" id="filenametext">选择图片</span>
                                 </div>
                                 <br>
                                 <span>建议长宽均为128px倍数</span>
@@ -131,56 +131,63 @@
             
                 var randomid = "";
             
-                var responses ="";
+                // var responses ="";
                 var responses_count = 0;
                 $("#js-progressbar").attr("max",width*height);
-                if (all_maps_data) {
-                    for (var i = 0; i < width; i++) {
-                        for (var j = 0; j < height; j++) {
-                            map_item = [];
-                            var co;
-                            for (var k = 0; k < 128; k++) {
-                                for (var l = 0; l < 128; l++) {
-                                co = all_maps_data[((j * width * 128 * 128) + i * 128) +
-                                    l + width * 128 * k];
-                                if (co > 127) {
-                                    co = co - 256;
-                                }
-                                map_item.push(co);
-                                }
-                            }
-                            
-                            responses+=(i*height+j)+":"+JSON.stringify(map_item)+";";
-                            if(i*width+j!=0 && (i*height+j)%20==0){
-                                tijiao(responses,(i*height+j));
-                                responses="";
-                                _status[(i*height+j)]=false;
-                            }
-                        }
-                    }
-                    tijiao(responses,(i*height+j));
-                    _status[(i*height+j)]=false;
-                    max=true;
-                    
-                }
                 
+                tijiao(0)
                 return false;
                 
             });
         })
     );
     var _status=[];
+    var responses="";
     var max=false;
-    function tijiao(responses,num){
+
+    function add_res(i,j){
+        map_item = [];
+        var co;
+        for (var k = 0; k < 128; k++) {
+            for (var l = 0; l < 128; l++) {
+            co = all_maps_data[((j * width * 128 * 128) + i * 128) + l + width * 128 * k];
+            if (co > 127) {
+                co = co - 256;
+            }
+            map_item.push(co);
+            }
+        }
+        
+        responses+=(i*height+j)+":"+JSON.stringify(map_item)+";";
+    }
+
+    function tijiao(num){
+        if (all_maps_data) {
+            for (var i = 0; i < width; i++) {
+                for (var j = 0; j < height; j++) {
+                    if((i*height+j)<=num)continue;
+                    add_res(i,j);
+                    if(i*width+j!=0 && (i*height+j)%20==0){
+                        _tijiao(responses,(i*height+j));
+                        responses="";
+                        _status[(i*height+j)]=false;
+                    }
+                }
+            }
+            _tijiao(responses,(i*height+j));
+            _status[(i*height+j)]=false;
+            max=true;
+                
+        }
+        
+        
+    }
+
+    function _tijiao(responses,num){
         $.post("/declare/maps_add",{data:(responses)},function(obj){
             if (obj.status === "ok") {
-                UIkit.notification({
-                    message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
-                    status: 'success',
-                    timeout: 2000
-                });
-                UIkit.modal("#building-box").hide();
-                status[num]=true;
+                tijiao(num)
+                _status[num]=true;
             } else {
                 UIkit.notification({
                     message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
@@ -198,6 +205,12 @@
                         return false;
                     }
                 });
+                UIkit.notification({
+                    message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                    status: 'success',
+                    timeout: 2000
+                });
+                UIkit.modal("#building-box").hide();
                 $("#overlay").css("display","none");
                 window.location.reload();
             }
@@ -219,6 +232,8 @@
     $("[name=file]").change(function() {
         url = window.URL || window.webkitURL;
         var f = $(this)[0].files[0];
+        console.log(f);
+        $("#filenametext").text(f.name);
         img = new Image();
         src = url.createObjectURL(f);
         original_img = document.getElementById('original_img')
