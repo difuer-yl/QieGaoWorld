@@ -162,9 +162,7 @@
     }
 
     function tijiao(num){
-        if(width*height-num<=1){
-            return;
-        }
+        
         if (all_maps_data) {
             for (var i = 0; i < width; i++) {
                 for (var j = 0; j < height; j++) {
@@ -192,7 +190,10 @@
         
         $.post("/declare/maps_add",{data:(responses)},function(obj){
             if (obj.status === "ok") {
-                tijiao(num)
+                if(width*height-num>1){
+                    tijiao(num)
+                    return;
+                }
                 _status[num]=true;
             } else {
                 UIkit.notification({
