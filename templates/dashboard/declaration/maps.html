@@ -135,7 +135,7 @@
                 var responses_count = 0;
                 $("#js-progressbar").attr("max",width*height);
                 
-                tijiao(0)
+                tijiao(-1)
                 return false;
                 
             });
@@ -162,15 +162,19 @@
     }
 
     function tijiao(num){
+        if(width*height-num<=1){
+            return;
+        }
         if (all_maps_data) {
             for (var i = 0; i < width; i++) {
                 for (var j = 0; j < height; j++) {
                     if((i*height+j)<=num)continue;
                     add_res(i,j);
-                    if(i*width+j!=0 && (i*height+j)%20==0){
+                    if( i*height+j-num==20){
                         _tijiao(responses,(i*height+j));
                         responses="";
                         _status[(i*height+j)]=false;
+                        return;
                     }
                 }
             }
@@ -184,6 +188,8 @@
     }
 
     function _tijiao(responses,num){
+        console.log(num);
+        
         $.post("/declare/maps_add",{data:(responses)},function(obj){
             if (obj.status === "ok") {
                 tijiao(num)
