@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-10-28 16:06:41
+@LastEditTime: 2019-12-14 18:20:36
 @LastEditors: chiaki
 '''
 import json
@@ -107,18 +107,18 @@ def login_verify(request):
         #     return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
 
         user = User.objects.filter(username=username)
-        print(user)
+        
         if user ==None :
             obj = User(username=username, password=password, register_time=(time.time()))
             obj.save()
             user = User.objects.filter(username=username, password=password)
         user = user[0]
         uuid_ = get_uuid_from_name(username)  # 这里uuid_防止与uuid库名字冲突
-        # nickname = get_nickname_from_uuid(uuid_)
+        nickname = get_nickname_from_uuid(uuid_)
         user.uuid = uuid_
         hashlib.md5()
-        # user.nickname = nickname
-        # user.save()
+        user.nickname = nickname
+        user.save()
     else:
         user = User.objects.filter(username=username, password=password)
         if len(user) == 0:
