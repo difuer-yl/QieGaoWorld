@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-12-14 18:20:36
+@LastEditTime: 2019-12-14 19:05:12
 @LastEditors: chiaki
 '''
 import json
@@ -107,8 +107,7 @@ def login_verify(request):
         #     return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
 
         user = User.objects.filter(username=username)
-        
-        if user ==None :
+        if user ==None or len(user) == 0 :
             obj = User(username=username, password=password, register_time=(time.time()))
             obj.save()
             user = User.objects.filter(username=username, password=password)
