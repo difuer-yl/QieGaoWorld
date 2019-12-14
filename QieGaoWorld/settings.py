@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'mv*-vigv0d#(%*v#!$@2b*&8(dk%z0-%(_r8o%&kh8xuzs=@7%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -174,9 +174,17 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static/assets')
+# 设置图片等静态文件的路径
+# STATICFILES_DIRS = (
+# ('css',os.path.join(STATIC_ROOT,'css').replace('\\','/') ),
+# ('js',os.path.join(STATIC_ROOT,'js').replace('\\','/') ),
+# ('images',os.path.join(STATIC_ROOT,'images').replace('\\','/') ),
+# ('upload',os.path.join(STATIC_ROOT,'upload').replace('\\','/') ),
+# )
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    '/var/www/static',
+    # '/var/www/static',
 ]
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
