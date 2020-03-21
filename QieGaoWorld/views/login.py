@@ -48,6 +48,7 @@ def login_verify(request):
     username = str(request.POST.get("username", None))
     password = str(request.POST.get("password", None))
     t = str(request.POST.get("t", None))
+    auto_login = str(request.POST.get("auto_login", None))
     if t != None and t != '':
         _u=User.objects.filter(token=t).first()
         if _u !=None:
@@ -169,7 +170,12 @@ def login_verify(request):
         request.session['permissions'] = user.permissions
     
     rep=HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}));
-    rep.set_cookie("qg_t",user.token)
+    if auto_login == "true" :
+        rep.set_cookie("qg_t",user.token)
+        rep.set_cookie("auto_login",auto_login)
+    else :
+        rep.delete_cookie("qg_t")
+        rep.delete_cookie("auto_login")
     return rep
 
 def get_uuid_from_name(name):

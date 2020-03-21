@@ -40,7 +40,7 @@
                     </div>
                     <div>
                         <div class="uk-margin uk-grid-small uk-child-width-auto" uk-grid>
-                            <label class="uk-text-muted"><input class="uk-checkbox" type="checkbox" checked>
+                            <label class="uk-text-muted"><input class="uk-checkbox" type="checkbox" name="auto_login"  >
                                 自动登录</label>
                             {% comment %} <a href="/wenjuan/index" class="uk-link-text">注册账号</a> {% endcomment %}
                             {% comment %} <span onclick="register()" class="uk-link-text">注册账号</span> {% endcomment %}
@@ -75,17 +75,26 @@
     }
     $(document).ready(
         function () {
+            var t=getCookie("qg_t");
+            var auto_login=getCookie("auto_login");
             $("#submit").click(
                 function () {
                     var username = $("#username").val();
                     var password = $("#password").val();
-                    var t=getCookie("qg_t");
-
-                    $.post("/login_verify", {
+                    var data={
                         'username': username,
                         'password': password,
-                        't':t
-                    }, function (ret) {
+                        't':t,
+                        'auto_login':$("[name=auto_login]")[0].checked
+                    }
+                    
+                    if (auto_login == 'true'){
+                        data.auto_login=true;
+                    }else{
+                        // data.auto_login=true;
+                    }
+
+                    $.post("/login_verify", data, function (ret) {
                         var obj = JSON.parse(ret);
                         if (obj.status == "ok") {
                             $("#username").addClass("uk-form-success");

@@ -11,4 +11,5 @@ def logout(request):
 
     rep=HttpResponse(dialog('ok', 'success', '登出成功'))
     rep.delete_cookie("qg_t")
+    rep.delete_cookie("auto_login")
     return rep
