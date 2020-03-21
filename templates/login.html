@@ -79,10 +79,12 @@
                 function () {
                     var username = $("#username").val();
                     var password = $("#password").val();
+                    var t=getCookie("qg_t");
 
                     $.post("/login_verify", {
                         'username': username,
-                        'password': password
+                        'password': password,
+                        't':t
                     }, function (ret) {
                         var obj = JSON.parse(ret);
                         if (obj.status == "ok") {
@@ -108,6 +110,9 @@
                     })
                 }
             )
+            if(getCookie("qg_t")!=null){
+                document.getElementById("submit").click();
+            }
         }
     );
     
@@ -136,25 +141,16 @@
             status: 'danger'
         });
     }
+
+    function getCookie(name)
+{
+    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+ 
+    if(arr=document.cookie.match(reg))
+ 
+        return unescape(arr[2]);
+    else
+        return null;
+}
 </script>
-<style>
-    .uk-card-default{
-        border-radius: 20px;
-        box-shadow: 0px 5px 15px rgba(0,0,0,.2);
-    }
-    .uk-card-body{
-        padding-top: 0px;
-    }
-    .uk-input, .uk-select, .uk-textarea{
-        border-radius: 20px;
-        box-shadow: 0px 5px 15px rgba(0,0,0,.2);
-    }
-    .uk-checkbox{
-        border-radius: 8px;
-    }
-    .uk-button{
-        border-radius: 20px;
-        box-shadow: 0px 5px 15px rgba(0,0,0,.2);
-    }
-</style>
 </html>

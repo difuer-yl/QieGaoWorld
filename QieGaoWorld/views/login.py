@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2019-12-14 19:05:12
+@LastEditTime: 2020-03-21 11:22:00
 @LastEditors: chiaki
 '''
 import json
@@ -47,6 +47,12 @@ def login_verify(request):
     ON_SERVER = True
     username = str(request.POST.get("username", None))
     password = str(request.POST.get("password", None))
+    t = str(request.POST.get("t", None))
+    if t != None and t != '':
+        _u=User.objects.filter(token=t).first()
+        if _u !=None:
+            username=_u.username
+            password=_u.password
     password_md5 = hashlib.md5()   
     password_md5.update(password.encode('utf-8'))   
     cursor=connection.cursor()
@@ -154,14 +160,17 @@ def login_verify(request):
             if username in s:
                 request.session['permissions'] = settings.OP_PERMISSIONS
                 # request.session['permissions'] = user.get_all_permissions()
-            else:
-                if username == "Junyi99":  # 硬核编码（hhh
-                    request.session['permissions'] = settings.OP_PERMISSIONS
-                else:
-                    request.session['permissions'] = user.permissions
+            # else:
+            #     if username == "Junyi99":  # 硬核编码（hhh
+            #         request.session['permissions'] = settings.OP_PERMISSIONS
+            #     else:
+            #         request.session['permissions'] = user.permissions
     else:
         request.session['permissions'] = user.permissions
-    return HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}))
+    
+    rep=HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}));
+    rep.set_cookie("qg_t",user.token)
+    return rep
 
 def get_uuid_from_name(name):
     player_name = "OfflinePlayer:%s" % name

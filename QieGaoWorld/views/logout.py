@@ -8,4 +8,7 @@ def logout(request):
     request.session['is_login'] = False
     request.session['username'] = ''
     request.session['password'] = ''
-    return HttpResponse(dialog('ok', 'success', '登出成功'))
+
+    rep=HttpResponse(dialog('ok', 'success', '登出成功'))
+    rep.delete_cookie("qg_t")
+    return rep
