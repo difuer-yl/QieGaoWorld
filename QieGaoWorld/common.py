@@ -1,5 +1,6 @@
 from QieGaoWorld.models import Logs
 from PIL import Image,ImageDraw,ImageFont
+from django.shortcuts import render
 import time,math
 def logs(text,code='info'):
     logs = Logs(text=text,code=code,time=time.time())
@@ -68,6 +69,13 @@ def page(url,_list,type=None):
         re += "<option>第1页</option>"
 
         re+= "</select></div>"
+
+
+def diyrender(request,url,data):
+    # data['permissions']=request.session['permissions'];
+    # data['user']=1
+    return render(request, url, data)
+
 
 
     

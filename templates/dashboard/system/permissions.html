@@ -1,0 +1,179 @@
+<h2>权限管理
+    <small style="color: #666666; font-size: medium">Permissions manage</small>
+      
+    <button class="uk-button uk-button-default uk-button-primary uk-align-right uk-margin-small-top add"
+            uk-toggle="target: #per-add">新建权限
+    </button>
+      
+    
+</h2>
+<hr class="uk-margin"/>
+<p class="uk-text-meta">权限列表</p>
+<div class="uk-alert-primary" uk-alert id="tips" style="display:none">
+    <a class="uk-alert-close" uk-close></a>
+    <p></p>
+</div>
+<hr class="uk-margin"/>
+<div class="uk-alert-primary" uk-alert id="tips" style="display:none">
+    <a class="uk-alert-close" uk-close></a>
+    <p></p>
+</div>
+<div class="uk-modal-body">
+    <div class="pk-width-content">
+
+        <!-- <h2>{{ group.name }}</h2> -->
+        {% for t in type %}
+        <div class="uk-overflow-container uk-margin-large" >
+            <table class="uk-table uk-table-hover uk-table-middle">
+                <thead>
+                    <tr>
+                        <th class="pk-table-min-width-200">{{ t.model }}</th>
+                        <th class="pk-table-width-minimum"></th>
+                        <th class="pk-table-width-minimum"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in per %}
+                    {% if p.content_type_id == t.id %}
+                    <tr v-for="permission in group" :class="{'uk-visible-hover-inline': permission.trusted}">
+                        <td class="pk-table-text-break">
+                            <span :title="permission.description | trans" data-uk-tooltip="{pos:'top-left'}">{{ p.name}}</span>
+                        </td>
+                        <td>
+                            <i class="pk-icon-warning uk-invisible" :title="'Grant this permission to trusted roles only to avoid security implications.' | trans" data-uk-tooltip v-if="permission.trusted"></i>
+                        </td>
+                        <td class="uk-text-center">
+
+                            <!-- <span class="uk-position-relative" v-show="showFakeCheckbox(current, $key)">
+                                <input type="checkbox" checked disabled>
+                                <span class="uk-position-cover" v-if="!current.administrator" @click="addPermission(current, $key)" @click="savePermissions(current)"></span>
+                            </span> -->
+
+                            <!-- <input type="checkbox" value="{{p.id}}" {% if p.id in gp  %} checked{% endif %} data-group="{{group.id}}" class="uk-checkbox savePermissions" > -->
+                            <a  class="uk-margin-small-right uk-icon-link edit" data-id="{{p.id}}" data-title="{{p.name}}" data-code="{{p.codename}}" uk-icon="file-edit" title="编辑"></a>
+                            <a  class="uk-margin-small-right uk-icon-link del" _id="{{ p.id }}" style="color:red" uk-icon="trash" title="删除"></a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<div id="per-add" class="uk-flex-top" bg-close="false" esc-close="false" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <h2 class="uk-modal-title">权限编辑</h2>
+        </div>
+        <div class="uk-modal-body">
+            <form class="uk-form-horizontal" name="per-info" >
+                {% csrf_token %}
+                <div class="uk-margin">
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-5@s">
+                            <label class="uk-form-label" for="form-horizontal-text">权限名</label>
+                        </div>
+                        <div class="uk-width-4-5@s">
+                            <input class="uk-input" id="per-title" name="title" type="text" >
+                        </div>
+                    </div>
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-5@s">
+                            <label class="uk-form-label" for="form-horizontal-text">权限代码</label>
+                        </div>
+                        <div class="uk-width-4-5@s">
+                            <input class="uk-input" id="per-code" name="code" type="text" >
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="per-id" name="id">
+            </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right  ">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+            <button class="uk-button uk-button-primary" type="button" id="save">确认</button>
+        </div>
+    </div>
+</div>
+<script>
+    
+    
+    $(document).ready(
+        $(function () {
+
+            $(".edit").click(function(){
+                $("#per-title").val($(this).data("title"));
+                $("#per-id").val($(this).data("id"));
+                $("#per-code").val($(this).data("code"));
+                $(".add").click()
+            });
+
+            $("#save").click(function () {
+                var title = $("#title").val();
+                var id = $("#id").val();
+                console.log(getFormData("form[name=per-info]"));
+                console.log($("form[name=per-info]").serialize());
+                
+                $.post("user/permissions_edit",$("form[name=per-info]").serialize(), function (obj) {
+                    if (obj.status === "ok") {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                            status: 'success',
+                            timeout: 2000
+                        });
+                        UIkit.modal("#per-add").hide();
+                        window.location.reload();
+                    } else {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                            status: 'danger',
+                            timeout: 2000
+                        })
+                    }
+                }, "json")
+            });
+            $(".del").click(function() {
+                var _this = $(this);
+                $.post("user/permissions_del?_=" + Date.parse(new Date()), {
+                    "id":_this.attr("_id")
+                }, function(obj) {
+                    if (obj.status === "ok") {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                            status: 'success',
+                            timeout: 2000
+                        });
+                        _this.parents("tr").remove();
+                    } else {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                            status: 'danger',
+                            timeout: 2000
+                        })
+                    }
+                }, "json")
+            });
+        })
+    );
+    
+      
+    function getFormData(dom_query){
+    var out = {};
+    var s_data = $(dom_query).serializeArray();
+    //transform into simple data/value object
+    for(var i = 0; i<s_data.length; i++){
+        var record = s_data[i];
+        out[record.name] = record.value;
+    }
+    return out;
+}
+    
+    
+    
+</script>

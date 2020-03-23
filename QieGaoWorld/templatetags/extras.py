@@ -4,19 +4,38 @@ register = template.Library()
 
 @register.filter
 def select(value,args):
-    return '<select class="uk-select animal_options" >%s</select>' % option(value,args)
+    multiple=""
+    if 'multiple' in value:
+        multiple='multiple="multiple"'
+        value=value[1:]
+    return '<select class="uk-select animal_options" %s >%s</select>' % (multiple,option(value,args))
     
 @register.filter
 def option(value,args):
     option=""
+    _value=""
+    _id=None
     for v in value:
-        if v.id == None:
-            v.id=v.value
-        if v.id == args :
-            selected="selected"
+        if type(v) == dict:
+            _value=v['value']
+            _id=v['id']
+            if v['id'] == None:
+                v['id']=_value
+            if v['id'] in args :
+                selected="selected"
+            else:
+                selected=""
         else:
-            selected=""
-        option +='<option value="%s"%s>%s</option>' % (str(v.id),select,str(v.value))
+            _value=v.value
+            _id=v.id
+            if v.id == None:
+                v.id=v.value
+            if v.id in args :
+                selected="selected"
+            else:
+                selected=""
+        
+        option +='<option value="%s"%s>%s</option>' % (str(_id),selected,str(_value))
     
     return option
 

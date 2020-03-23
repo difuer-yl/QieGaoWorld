@@ -1,0 +1,157 @@
+<h2>用户组管理
+    <small style="color: #666666; font-size: medium">Group manage</small>
+      
+    <button class="uk-button uk-button-default uk-button-primary uk-align-right uk-margin-small-top add"
+            uk-toggle="target: #group-add">新建组
+    </button>
+      
+    
+</h2>
+<hr class="uk-margin"/>
+<p class="uk-text-meta">用户组列表</p>
+<div class="uk-alert-primary" uk-alert id="tips" style="display:none">
+    <a class="uk-alert-close" uk-close></a>
+    <p></p>
+</div>
+<table class="uk-table uk-table-divider uk-table-striped uk-table-hover">
+    <caption></caption>
+    <thead>
+    <tr>
+        <th class="uk-width-medium">组名</th>
+        <th class="uk-width-small uk-visible@s">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for b in list %}
+        <tr >
+            <td class="title">
+                {{ b.name }}
+            </td>
+            <td class="uk-visible@s">
+                <a  class="uk-margin-small-right uk-icon-link del" _id="{{ b.id }}" style="color:red" uk-icon="trash" title="删除"></a>
+                <a  class="uk-margin-small-right uk-icon-link edit" data-id="{{b.id}}" data-title="{{b.name}}" uk-icon="file-edit" title="编辑"></a>
+                <a  class="uk-margin-small-right uk-icon-link grid"  data-id="{{b.id}}" data-title="{{b.name}}" uk-icon="grid" title="编辑"></a>
+                </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div id="group-add" class="uk-flex-top" bg-close="false" esc-close="false" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <h2 class="uk-modal-title">用户组编辑</h2>
+        </div>
+        <div class="uk-modal-body">
+            <form class="uk-form-horizontal" name="info">
+                {% csrf_token %}
+                <div class="uk-margin">
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-5@s">
+                            <label class="uk-form-label" for="form-horizontal-text">组名</label>
+                        </div>
+                        <div class="uk-width-4-5@s">
+                            <input class="uk-input" id="title" type="text" >
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="id">
+            </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right  ">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+            <button class="uk-button uk-button-primary" type="button" id="save">确认</button>
+        </div>
+    </div>
+</div>
+<div id="info" uk-modal class="uk-modal">
+    <div class="uk-modal-dialog uk-margin-auto-vertical" id="info-content">
+        111111
+    </div>
+</div>
+<script>
+    var modal = UIkit.modal("#info");
+
+    $(document).ready(
+        $(function () {
+        
+            $(".edit").click(function(){
+                $("#title").val($(this).data("title"));
+                $("#id").val($(this).data("id"));
+                $(".add").click()
+            });
+            
+            $(".grid").click(function(){
+                var id = $(this).data('id');
+                
+                $.post("user/group_info", {
+                    "id": id
+                }, function (data) {
+                    // UIkit.modal.dialog(data);
+                    modal.hide();
+                    $("#info-content").html(data)
+                    modal.show()
+                });
+
+                return false;
+            })
+
+            $("#save").click(function () {
+                var title = $("#title").val();
+                var id = $("#id").val();
+
+                $.post("user/group_add?_=" + Date.parse(new Date()), {
+                    "title": title,
+                    "id": id,
+
+                }, function (obj) {
+                    if (obj.status === "ok") {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                            status: 'success',
+                            timeout: 2000
+                        });
+                        UIkit.modal("#group-add").hide();
+                        window.location.reload();
+                    } else {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                            status: 'danger',
+                            timeout: 2000
+                        })
+                    }
+                }, "json")
+            });
+            $(".del").click(function() {
+                var _this = $(this);
+                $.post("user/group_del?_=" + Date.parse(new Date()), {
+                    "id":_this.attr("_id")
+                }, function(obj) {
+                    if (obj.status === "ok") {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                            status: 'success',
+                            timeout: 2000
+                        });
+                        _this.parents("tr").remove();
+                    } else {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                            status: 'danger',
+                            timeout: 2000
+                        })
+                    }
+                }, "json")
+            });
+            
+        })
+    );
+    
+      
+    
+    
+    
+    
+</script>

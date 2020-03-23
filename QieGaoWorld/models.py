@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F
 from django.contrib.auth.models import AbstractUser
 
 from QieGaoWorld import settings
@@ -61,6 +62,15 @@ class DeclareBuildings(models.Model):
     type = models.IntegerField(default=0)  # 建筑类型（0:公共建筑, 1:私有建筑）
     text=models.CharField(max_length=200) #拒绝原因
 
+    #宅基地自动登记
+class Homestead(models.Model):
+    time = models.IntegerField(default=0)  # 申请时间
+    username = models.CharField(max_length=100, default='')  # 申请人用户名
+    start_x = models.CharField(max_length=64, default='')  # 建筑坐标
+    start_z = models.CharField(max_length=64, default='')  # 建筑坐标
+    end_x = models.CharField(max_length=64, default='')  # 建筑坐标
+    end_z = models.CharField(max_length=64, default='')  # 建筑坐标
+
 
 # 动物申报记录
 class DeclareAnimals(models.Model):
@@ -99,13 +109,15 @@ class ProblemInfo(models.Model):
     content=models.TextField()
     status=models.BooleanField(default=True)
 
-
+#菜单
 class Menu(models.Model):
     name=models.CharField(max_length=50)
     type=models.IntegerField() #类型（0：目录，1：菜单）
     url=models.CharField(max_length=100)
     status=models.BooleanField(default=True)
     parent=models.IntegerField()
+    code=models.CharField(default='',max_length=100)
+    list=models.IntegerField(default=0)
 class WenjuanLog(models.Model):
     user_id=models.IntegerField()
     problem_id=models.IntegerField()
@@ -115,6 +127,7 @@ class Conf(models.Model):
     name=models.CharField(max_length=50)
     content=models.TextField()
     
+#头颅定制
 class SkullCustomize(models.Model):
     user_id=models.IntegerField()
     content=models.TextField()
@@ -134,16 +147,21 @@ class Society(models.Model):
     member =models.TextField()
     manager =models.TextField()
 
+#任务
 class Task(models.Model):
     title=models.CharField(max_length=200)
     content=models.TextField()
     username=models.CharField(max_length=100)
     status=models.IntegerField()  # 0：悬赏中 1：已完成  2：已结束
+
+#地图
 class Maps(models.Model):
     username=models.CharField(max_length=100)
     mapid=models.IntegerField()
     status=models.BooleanField()
     img=models.CharField(max_length=100)
+
+#签到
 class Signin(models.Model):
     username=models.CharField(max_length=100)
     day=models.IntegerField()
@@ -155,7 +173,7 @@ class Signin(models.Model):
     total=models.IntegerField(default=0)
     continuous=models.IntegerField(default=0)
     supplement=models.IntegerField(default=0)
-
+#签到奖励
 class Reward(models.Model):
     name=models.CharField(max_length=100)
     status=models.BooleanField(default=True)
@@ -184,7 +202,7 @@ class OtherData(models.Model):
 #公告
 class Message(models.Model):
     content=models.TextField()
-    num=models.IntegerField(default=300,max_length=10)
+    num=models.IntegerField(default=300)
     status=models.BooleanField(default=True)
 
 
@@ -210,3 +228,44 @@ class CmsChapter(models.Model):
     show_time=models.IntegerField()
     status=models.BooleanField(default=True) #1已发布 0草稿箱 -1已删除 2已下架
     time=models.IntegerField()
+
+
+#需求表
+class Demand(models.Model):
+    title=models.CharField(max_length=100)#标题
+    user_id=models.IntegerField() #关联用户id
+    details=models.TextField() #详情
+    status=models.IntegerField(default=0)#状态0待处理1处理中2已完成3已拒绝
+    like=models.IntegerField(default=0)#点赞数
+
+    def add(self,filed,num=1):
+        # ob[filed] +=1
+        setattr(self,filed,F(filed)+1)
+        self.save()
+        # do something with the book
+    def lover(self,filed,num=1):
+        setattr(self,filed,F(filed)-1)
+        self.save()
+
+
+#需求点赞表
+#无需保留取消点赞记录所以使用硬删除
+class DemandLike(models.Model):
+    demand_id=models.IntegerField(default=0,null=False)#需求id
+    user_id=models.IntegerField(default=0)#点赞用户id
+    time=models.DateTimeField(auto_now_add=True)#点赞时间
+
+    @classmethod
+    def add(cls, demand_id,user_id):
+        ob = cls(demand_id=demand_id,user_id=user_id)
+        ob.save()
+        # do something with the book
+        return ob
+
+
+class Resolution(models.Model):
+    content=models.CharField(max_length=500)
+    user_id=models.IntegerField(default=0,null=False)
+    demand_id=models.IntegerField(default=0,null=False)
+    type=models.IntegerField(default=0,null=False) #0市长决议1糕委会决议2开发反馈
+    time=models.DateTimeField(auto_now=True)

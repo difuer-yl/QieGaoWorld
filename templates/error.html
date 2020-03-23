@@ -1,3 +1,10 @@
+<!--
+ * @Author: chiaki
+ * @Date: 2019-10-16 00:24:28
+ * @LastEditors: chiaki
+ * @LastEditTime: 2020-03-22 21:46:26
+ * @Description: 
+ -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -21,16 +28,31 @@
         <div class="uk-align-center uk-width-large">
             <div class="uk-card uk-card-default">
                 <div class="uk-card-header">
-                    <h1>{{ error_message }}</h1>
+                    <h2>{{ error_message }}</h2>
                 </div>
                 <div class="uk-card-footer">
                     ( •̀ ω •́ )y
-                    <a href="/login">点此跳转到登录页</a>
+                    {% if jump != "no" %}<span class="djs">5</span> 秒后将自动跳转，或{% endif%}<a href="/login">点此跳转到登录页</a>
                 </div>
 
             </div>
         </div>
     </div>
-
     </body>
+    <script>
+        var n=5;
+        var inv=null;
+        $(function () {
+            {% if jump != "no" %}
+            inv=setInterval(function () {
+                if(n<=0){
+                    clearInterval(inv)
+                    window.location.href="/login"
+                }
+                $(".djs").html(n)
+                n--;
+            },1000)
+            {% endif%}
+        })
+    </script>
 </html>

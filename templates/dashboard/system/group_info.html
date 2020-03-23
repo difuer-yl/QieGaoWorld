@@ -1,0 +1,113 @@
+{% load static %}
+<h2>用户组权限
+    
+</h2>
+<hr class="uk-margin"/>
+<div class="uk-alert-primary" uk-alert id="tips" style="display:none">
+    <a class="uk-alert-close" uk-close></a>
+    <p></p>
+</div>
+<div class="uk-modal-body">
+    <div class="pk-width-content">
+
+        <h2>{{ group.name }}</h2>
+        {% for t in type %}
+        <div class="uk-overflow-container uk-margin-large" >
+            <table class="uk-table uk-table-hover uk-table-middle">
+                <thead>
+                    <tr>
+                        <th class="pk-table-min-width-200">{{ t.model }}</th>
+                        <th class="pk-table-width-minimum"></th>
+                        <th class="pk-table-width-minimum"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in per %}
+                    {% if p.content_type_id == t.id %}
+                    <tr v-for="permission in group" :class="{'uk-visible-hover-inline': permission.trusted}">
+                        <td class="pk-table-text-break">
+                            <span :title="permission.description | trans" data-uk-tooltip="{pos:'top-left'}">{{ p.name}}</span>
+                        </td>
+                        <!-- <td>
+                            <i class="pk-icon-warning uk-invisible" :title="'Grant this permission to trusted roles only to avoid security implications.' | trans" data-uk-tooltip v-if="permission.trusted"></i>
+                        </td> -->
+                        <td class="uk-text-center">
+
+                            <!-- <span class="uk-position-relative" v-show="showFakeCheckbox(current, $key)">
+                                <input type="checkbox" checked disabled>
+                                <span class="uk-position-cover" v-if="!current.administrator" @click="addPermission(current, $key)" @click="savePermissions(current)"></span>
+                            </span> -->
+
+                            <input type="checkbox" value="{{p.id}}" {% if p.id in gp  %} checked{% endif %} data-group="{{group.id}}" class="uk-checkbox savePermissions" >
+
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<div id="group-add" class="uk-flex-top" bg-close="false" esc-close="false" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <h2 class="uk-modal-title">用户组编辑</h2>
+        </div>
+        <div class="uk-modal-body">
+            <form class="uk-form-horizontal" name="info">
+                {% csrf_token %}
+                <div class="uk-margin">
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-5@s">
+                            <label class="uk-form-label" for="form-horizontal-text">组名</label>
+                        </div>
+                        <div class="uk-width-4-5@s">
+                            <input class="uk-input" id="title" type="text" >
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="id">
+            </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right  ">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+            <button class="uk-button uk-button-primary" type="button" id="save">确认</button>
+        </div>
+    </div>
+</div>
+<script>
+    
+    
+    $(document).ready(
+        $(function () {
+            $("#info").on("click",".savePermissions",
+                function (e) {
+                    
+                    $.post("/user/group_permissions",{id:$(this).val(),status:$(this)[0].checked,group:$(this).data("group")},function (obj) {
+                        // if (obj.status === "ok") {
+                        //     } else {
+                        //         UIkit.notification({
+                        //             message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                        //             status: 'danger',
+                        //             timeout: 2000
+                        //         })
+                        //     }
+                    })
+                    
+                })
+            
+        })
+    );
+    
+      
+    
+    
+    
+    
+</script>
