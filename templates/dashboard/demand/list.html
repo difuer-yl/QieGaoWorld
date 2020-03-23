@@ -1,0 +1,212 @@
+<!--
+ * @Author: chiaki
+ * @Date: 2020-03-20 18:03:31
+ * @LastEditors: chiaki
+ * @LastEditTime: 2020-03-22 17:30:12
+ * @Description: 
+ -->
+<table class="uk-table uk-table-divider uk-table-striped uk-table-hover">
+        <caption></caption>
+        <thead>
+        <tr>
+            <th class="uk-width-small">编号</th>
+            <th class="uk-width-medium">名称</th>
+            
+            <th class="uk-width-small">状态</th>
+            <th class="uk-width-small">发起人</th>
+            <th class="uk-width-small">点赞数</th>
+            <th class="uk-width-small uk-visible@s">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for b in list %}
+            <tr>
+                <td class="nowrap uk-visible@m">
+                    {{ b.id }}
+                </td>
+                <td class="nowrap uk-visible@m">
+                    {{ b.title}}
+                    
+                </td>
+                
+                <td>
+                                <span class="uk-label {{ b.status_label }}"
+                                      style="vertical-align: middle">{{ b.status_text }}</span>
+                </td>
+                <td>
+                    {{ b.nickname }}
+                </td>
+                <td class="like_num">
+                    {{ b.like }}
+                </td>
+                <td class="uk-visible@s">
+                    
+                    {% if type != "list" %}
+                        {% if  b.status == -1  %}
+                        
+                            <a  class="uk-margin-small-right uk-icon-link del" _id="{{ b.id }}" style="color:red" uk-icon="trash" title="删除"></a>
+                        
+                        {% endif %}
+                        
+                    {% else %}
+                        <a  class="uk-margin-small-right uk-icon-link like" _id="{{ b.id }}" data-status="{{ b.like_status }}" style="{% if  b.like_status  %}color:red {% endif %}" uk-icon="heart" title="点赞"></a>
+                        {% if perms.QieGaoWorld.mayor %}
+                        
+                            <a  class="uk-margin-small-right uk-icon-link change" data-id="{{ b.id }}" 
+                            data-type="0" data-content="{{ b.res.0.content }}" data-time="{{ b.res.0.time}}" style="{% if  b.res.0  %}color:green {% endif %}" uk-icon="comment" title="市长决议"></a>
+                        {% endif %}
+                        {% if perms.QieGaoWorld.gwh  %}
+                            <a  class="uk-margin-small-right uk-icon-link change" data-id="{{ b.id }}" data-type="1" data-content="{{ b.res.1.content }}" data-time="{{ b.res.1.time}}" style="{% if not b.res.1  %}color:green {% endif %}" uk-icon="comment" title="糕委会决议"></a>
+                        {% endif %}
+                        {% if perms.QieGaoWorld.develop %}
+                            <a  class="uk-margin-small-right uk-icon-link change" data-id="{{ b.id }}" data-type="2" data-content="{{ b.res.2.content }}" data-time="{{ b.res.2.time}}" style="{% if not b.res.2  %}color:green {% endif %}" uk-icon="comment" title="开发反馈"></a>
+                            
+                        {% endif %}
+                        <a  class="uk-margin-small-right uk-icon-link info" data-id="{{ b.id }}" style="" uk-icon="info" title="查看详情"></a>
+
+                    {% endif %}
+                    </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% autoescape off %}{{ page }}{% endautoescape %}
+
+    <div id="demand-resolution" class="uk-flex-top" bg-close="false" esc-close="false" uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+    
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title title"></h2>
+            </div>
+            <div class="uk-modal-body">
+                <form class="uk-form-horizontal" name="per-info" >
+                    {% csrf_token %}
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">决议内容</label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <textarea class="uk-textarea" name="content" rows="10"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden"  name="id">
+                    <input type="hidden"  name="type">
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right  ">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+                <button class="uk-button uk-button-primary save" type="button" >确认</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="uk-button uk-button-default uk-button-primary uk-align-right uk-margin-small-top resolution" hidden uk-toggle="target: #demand-resolution">决议
+    </button>
+    <div id="demand-info" uk-modal class="uk-modal">
+        <div class="uk-modal-dialog uk-margin-auto-vertical info-content">
+            111111
+        </div>
+    </div>
+<script>
+    var modal = UIkit.modal("#demand-info");
+        $(".del").click(function() {
+            var _this = $(this);
+            $.post("demand/maps_del?_=" + Date.parse(new Date()), {
+                "id":_this.attr("_id")
+            }, function(obj) {
+                if (obj.status === "ok") {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                        status: 'success',
+                        timeout: 2000
+                    });
+                    _this.parents("tr").remove();
+                } else {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                        status: 'danger',
+                        timeout: 2000
+                    })
+                }
+            }, "json")
+    
+            
+        });
+        $(".like").click(function() {
+            var _this = $(this);
+            $.post("demand/like?_=" + Date.parse(new Date()), {
+                "id":_this.attr("_id"),
+                "status":_this.data("status")
+            }, function(obj) {
+                if (obj.status === "ok") {
+                    let a=_this.parents("tr").find(".like_num")
+                    
+                    if(_this.data("status")==0){
+                        _this.css("color","red")
+                        
+                        a.html(parseInt(a.html())+1)
+                        _this.data("status",1)
+                    }else{
+                        _this.css("color","")
+                        
+                        a.html(parseInt(a.html())-1)
+                        _this.data("status",0)
+                    }
+                } else {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                        status: 'danger',
+                        timeout: 2000
+                    })
+                }
+            }, "json")
+            
+        });
+        $(".change").click(function(){
+            console.log($(this).attr("title"));
+            
+            $("#demand-resolution .title").html($(this).attr("title"));
+            $("#demand-resolution [name=id]").val($(this).data("id"));
+            $("#demand-resolution [name=content]").val($(this).data("content"));
+            $("#demand-resolution [name=type]").val($(this).data("type"));
+            $(".resolution").click()
+        });
+        $("#demand-resolution .save").click(function () {
+            $.post("demand/resolution",$("#demand-resolution form").serialize(),function (data) {
+                if (data.status === "ok") {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: check\'></span> ' + data.msg,
+                        status: 'success',
+                        timeout: 2000
+                    });
+                    // UIkit.toggle("#demand-resolution").toggle();
+                    window.location.reload()
+                } else {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: close\'></span> ' + data.msg,
+                        status: 'danger',
+                        timeout: 2000
+                    })
+                }
+            },'json')
+        })
+
+        
+        $(".info").click(function(){
+                var id = $(this).data('id');
+                
+                $.post("demand/info", {
+                    "id": id
+                }, function (data) {
+                    // UIkit.modal.dialog(data);
+                    modal.hide();
+                    $("#demand-info .info-content").html(data)
+                    modal.show()
+                });
+
+                return false;
+            })
+</script>

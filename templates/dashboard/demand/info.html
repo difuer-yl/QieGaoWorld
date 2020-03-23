@@ -1,0 +1,57 @@
+<!--
+ * @Author: chiaki
+ * @Date: 2020-03-22 15:40:52
+ * @LastEditors: chiaki
+ * @LastEditTime: 2020-03-22 17:33:50
+ * @Description: 
+ -->
+{% load static %}
+{% load humanize %}
+<button class="uk-modal-close-default" type="button" uk-close></button>
+
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">需求详情</h2>
+</div>
+
+<div class="uk-modal-body" uk-overflow-auto>
+    <article class="uk-article">
+        <h1 class="uk-article-title">{{ demand.title }}
+            <span class="uk-margin-left uk-label {{ demand.status_label }}" style="vertical-align: middle">
+                {{ demand.status_label }}
+            </span>
+        </h1>
+        <p class="uk-article-meta">{{ demand.english_name }}</p>
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-small">
+                <p class="uk-text-bold">申请人：</p>
+            </div>
+            <div class="uk-width-expand">
+                <p>{{ demand.nickname }}</p>
+            </div>
+        </div>
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-small">
+                <p class="uk-text-bold">需求内容：</p>
+            </div>
+            <div class="uk-width-expand">
+                <p>{{ demand.details }}</p>
+            </div>
+        </div>
+        <div uk-overflow-auto>
+            {% for r in res %}
+            <div class="uk-grid-small" uk-grid>
+                <div class="uk-width-small">
+                    <p class="uk-text-bold">{{ r.type_label }}：</p>
+                </div>
+                <div class="uk-width-expand">
+                    <p>{{ r.content }}</p>
+                    <p>{{ r.time|naturaltime }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </article>
+</div>
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button uk-button-primary uk-modal-close" type="button">关闭</button>
+</div>

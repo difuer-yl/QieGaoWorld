@@ -1,0 +1,113 @@
+{% load static %}
+<h2>需求定制
+    <small style="color: #666666; font-size: medium">Demand Customize</small>
+    {% if type != "list" %}
+    <button class="uk-button uk-button-default uk-button-primary uk-align-right uk-margin-small-top"
+            uk-toggle="target: #building-box">新需求
+    </button>
+    {% endif %}
+</h2>
+<hr class="uk-margin"/>
+<p class="uk-text-meta">下面显示的是所有的需求</p>
+<div class="uk-alert-primary" uk-alert id="tips" style="display:none">
+    <a class="uk-alert-close" uk-close></a>
+    <p></p>
+</div>
+<div id="list">
+
+</div>
+
+
+<div id="building-box" class="uk-flex-top" bg-close="false" esc-close="false" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <h2 class="uk-modal-title">需求定制</h2>
+        </div>
+        <div class="uk-modal-body">
+            <form class="uk-form-horizontal" name="info" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="uk-margin">
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-5@s">
+                            <label class="uk-form-label" for="form-horizontal-text">标题</label>
+                        </div>
+                        <div class="uk-width-4-5@s upload_concept" >
+                            <input class="uk-input" name="title" type="text" placeholder="标题">
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-5@s">
+                            <label class="uk-form-label" for="form-horizontal-text">内容</label>
+                        </div>
+                        <div class="uk-width-4-5@s upload_concept" >
+                            <textarea class="uk-textarea" name="content" rows="10"></textarea>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right  ">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+            <button class="uk-button uk-button-primary" type="button" id="save">确认</button>
+        </div>
+    </div>
+</div>
+
+<script>
+        function list(page=1){
+            loading()
+            $.post("demand/list",{page:page
+            {% if type != "list" %}
+                ,type:"user"
+            {% else %}
+            ,type:"list"
+            {% endif %}
+            },function(data){
+                $("#list").html(data);
+                loading()
+            })
+        }
+    $(document).ready(
+        $(function () {
+            list()
+            $("#save").click(function () {
+                let title=$("[name=title]").val();
+                let content=$("[name=content]").val();
+                if(title.length==0 ||content.length==0){
+                    return false;
+                    UIkit.notification({
+                    message: '<span uk-icon=\'icon: close\'></span> 标题或内容不能为空' ,
+                    status: 'danger',
+                    timeout: 2000
+                })
+                }
+                $.post("/demand/add",{title:title,content:content},function(obj){
+                    if (obj.status === "ok") {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                            status: 'success',
+                            timeout: 2000
+                        })
+                        window.location.reload();
+                    } else {
+                        UIkit.notification({
+                            message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                            status: 'danger',
+                            timeout: 2000
+                        })
+                    }
+                },"json");
+                return false;
+                
+            });
+        })
+    );
+
+</script>
