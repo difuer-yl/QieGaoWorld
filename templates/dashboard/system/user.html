@@ -45,7 +45,7 @@
     {% endfor %}
     </tbody>
 </table>
-
+{% autoescape off %}{{ page }}{% endautoescape %}
 <div id="info" uk-modal class="uk-modal">
     <div class="uk-modal-dialog uk-margin-auto-vertical" id="info-content">
         111111
