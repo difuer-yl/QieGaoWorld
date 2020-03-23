@@ -2,7 +2,7 @@
 @Author: chiaki
 @Date: 2019-10-16 00:24:28
 @LastEditors: chiaki
-@LastEditTime: 2020-03-22 21:46:38
+@LastEditTime: 2020-03-23 21:33:08
 @Description: 
 '''
 from django.shortcuts import render
@@ -18,8 +18,8 @@ def check_login(func):
             
             return login._login_verify(args[0])
         else:
-            if args[0].user.qqnumber ==0:
-                return render(args[0], "error.html", {"error_message": "请前往服务器绑定QQ！","jump":"no"})
+        #     if args[0].user.qqnumber ==0:
+        #         return render(args[0], "error.html", {"error_message": "请前往服务器绑定QQ！","jump":"no"})
             args[0].session.set_expiry(3600)  # 1小时有效期
         return func(*args, **kw)
 
