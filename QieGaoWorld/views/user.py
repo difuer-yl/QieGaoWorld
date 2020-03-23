@@ -183,3 +183,39 @@ def test(request):
     # Permission.objects.create(codename='gwh',name="糕委会决议",content_type=content_type)
     # Permission.objects.create(codename='develop',name="开发反馈",content_type=content_type)
     return HttpResponse(dialog('ok', 'success', '成功',{}))
+
+def generate_user(request):
+    username=request.GET.get("u",None)
+    if len(username)<3 :
+         return
+    with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
+        plays = f.read()
+        if "- " + username.lower() not in plays:
+            return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
+
+    with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
+        plays = json.loads(f.read())
+        s = "%"
+        for b in plays:
+            s += b['name'] + "%"
+        if "%" + username + "%" in s:
+            return HttpResponse(dialog('failed', 'danger', '登录失败！您的帐号已被此服务器封禁!'))
+    cursor=connection.cursor()
+    cursor.execute("select * from playertable where playername='"+username+"'")
+    row=cursor.fetchone()
+    if row ==None:
+        return HttpResponse(dialog('failed', 'danger', '该账号不存在'))
+    else:
+        password=row[1]
+    user = User.objects.get(username=username)
+    if user is None :
+        user = User(username=username, password=password, register_time=(time.time()))
+    
+    user.save()
+    if not user.has_perm("QieGaoWorld.test") :
+        
+        user.groups.set(Group.objects.filter(id=3))
+
+    
+    rep=HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}));
+    return rep
