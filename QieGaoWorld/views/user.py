@@ -62,7 +62,7 @@ def user_info(request):
         }
         l.append(a)
     cursor=connection.cursor()
-    cursor.execute("select * from qiegaoworld_user_groups where user_id="+_id+"")
+    cursor.execute("select * from QieGaoWorld_user_groups where user_id="+_id+"")
     row=cursor.fetchall()
     group=[]
     for i in range(0,len(row)):
