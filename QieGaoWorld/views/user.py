@@ -30,14 +30,14 @@ def user_list(request):
     list=paginator.get_page(page)
     # user=User.objects.all()
 
-    return common.diyrender(request, 'dashboard/system/user.html', {'list': list,"page":common.page("system/user",list)})
+    return common.diyrender(request, 'dashboard/system/user.html', {'list': list,"page":common.page("user/user_list",list)})
 
 #用户组列表
 def group(request):
 
     list=group_list(request)
     
-    return common.diyrender(request, 'dashboard/system/group.html', {'list': list,"page":common.page("system/group",list)})
+    return common.diyrender(request, 'dashboard/system/group.html', {'list': list,"page":common.page("user/group",list)})
 
 def group_list(request):
     group=Group.objects.all()
