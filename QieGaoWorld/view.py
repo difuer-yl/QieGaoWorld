@@ -13,14 +13,31 @@ from .views.decorator import check_login, check_post
 from .views.settings import page_settings
 from .views.ops import whitelist
 from .views.wenjuan import problem_list
-from .views import system,society,skull,task,user,declare,signin,ops,cms
+from .views import system,society,skull,task,user,declare,signin,ops,cms,demand,user
 from QieGaoWorld import parameter as Para 
 from QieGaoWorld.models import DeclareBuildings, DeclareAnimals, Cases,Menu,Conf,SkullCustomize,Logs,Maps
 from QieGaoWorld import common
 
 from QieGaoWorld.views.police import username_get_nickname
 
-from django.db.models import Count
+from django.db.models import Count,Q
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 使用协议
 def agreement(request):
     return render(request, "agreement.html", {})
@@ -184,12 +201,24 @@ def page_rookies(request):
 
 @check_login
 def dashboard(request):
+    per=request.user.get_all_permissions()
+
+    menu=Menu.objects.filter(Q(code__exact=None)|Q(code__in=per)).filter(status=True,type=1)
+    parent_id=[]
+    for m in menu:
+        if m.parent not in parent_id:
+            parent_id.append(m.parent)
+    
+    parent=Menu.objects.filter(status=True,id__in=parent_id).order_by("list")
+    
     context = {
         'avatar': request.session['avatar'],
         'nickname': request.session['nickname'],
         'permissions': request.session['permissions'],
-        "menu":Menu.objects.filter(status=True)
+        "menu":menu,
+        "parent":parent
     }
+    
 
     return render(request, "dashboard/dashboard.html", context)
 @check_login
@@ -205,9 +234,12 @@ def page_whitelist(request):
 
 @check_login
 def system_menu(request):
+    per=request.user.get_all_permissions()
+
+    menu=Menu.objects.filter(Q(code='')|Q(code__in=per))
     context = {
         'permissions': request.session['permissions'],
-        "menu":Menu.objects.all()
+        "menu":menu
     }
 
     return render(request, "dashboard/system/menu.html", context)
@@ -294,15 +326,7 @@ def page_task(request):
     }
 
     return render(request, "dashboard/task/list.html", context)
-def page_user_list(request):
-    
-    context = {
-        'permissions': request.session['permissions'],
-        "list":user.user_list(request),
-        "group":user.group_list(request),
-    }
 
-    return render(request, "dashboard/system/user.html", context)
 def page_group_list(request):
     
     context = {
@@ -425,10 +449,12 @@ def dashboard_page(request):
         return page_task_list(request)
     if request.POST.get("page", None) == "task":
         return page_task(request)
-    if request.POST.get("page", None) == "user_list":
-        return page_user_list(request)
-    if request.POST.get("page", None) == "group_list":
-        return page_group_list(request)
+    if request.POST.get("page", None) == "user":
+        return user.user_list(request)
+    if request.POST.get("page", None) == "group":
+        return user.group(request)
+    if request.POST.get("page", None) == "permissions":
+        return user.permissions(request)
     if request.POST.get("page", None) == "reward":
         return page_rawerd(request)
     if request.POST.get("page", None) == "signin":
@@ -443,5 +469,11 @@ def dashboard_page(request):
         return cms.chapter(request)
     if request.POST.get("page", None) == "ops_log_list":
         return ops.log_info(request)
+    if request.POST.get("page", None) == "demand_list":
+        return demand.index(request,"list")
+    if request.POST.get("page", None) == "demand":
+        return demand.index(request)
+    if request.POST.get("page", None) == "test":
+        return user.test(request)
 
     return HttpResponse("Response: " + request.POST.get("page", None))
