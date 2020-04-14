@@ -2,10 +2,11 @@
 @Author: chiaki
 @Date: 2019-10-16 00:24:28
 @LastEditors: chiaki
-@LastEditTime: 2020-03-22 13:00:34
+@LastEditTime: 2020-04-14 20:34:52
 @Description: 
 '''
 from django.http import HttpResponse
+import requests
 
 from QieGaoWorld.views.decorator import check_post
 from QieGaoWorld.views.dialog import dialog
@@ -19,7 +20,8 @@ def logout(request):
     request.session['password'] = ''
 
     rep=HttpResponse(dialog('ok', 'success', '登出成功'))
-    rep.delete_cookie("qg_t")
-    rep.delete_cookie("auto_login")
+    rep.delete_cookie("qg_t",domain="qiegaoshijie.club")
+    rep.delete_cookie("auto_login",domain="qiegaoshijie.club")
+    requests.get("https://map.qiegaoshijie.club/logout")
     # logout(request)
     return rep
