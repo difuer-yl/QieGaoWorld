@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-03-22 21:20:26
+@LastEditTime: 2020-04-14 14:28:30
 @LastEditors: chiaki
 '''
 import json
@@ -104,6 +104,7 @@ def _login_verify(request):
     request.session['register_time'] = user.register_time
     request.session['avatar'] = user.avatar
     request.session.set_expiry(3600)  # 1小时有效期
+    
 
     with open(parameter.SPIGOT_PATH+"/ops.json", "r") as f:
         ops = f.read()
@@ -192,7 +193,7 @@ def login_verify(request):
     # if "playername=" + _username != user or ("password=" + password != passwd and "password=" + password_md5.hexdigest() != passwd ):
     #     return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
 
-    user = User.objects.get(username=username, password=password)
+    user = User.objects.get(username=username)
     if user is None :
         # User.objects.create_user(username,"",password)
         user = User(username=username, password=password, register_time=(time.time()))
@@ -229,7 +230,6 @@ def login_verify(request):
     request.session['register_time'] = user.register_time
     request.session['avatar'] = user.avatar
     request.session.set_expiry(3600)  # 1小时有效期
-
     with open(parameter.SPIGOT_PATH+"/ops.json", "r") as f:
         ops = f.read()
         a = (json.loads(ops))
