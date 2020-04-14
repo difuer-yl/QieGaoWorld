@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-04-14 14:28:30
+@LastEditTime: 2020-04-14 20:25:25
 @LastEditors: chiaki
 '''
 import json
@@ -250,11 +250,11 @@ def login_verify(request):
     rep=HttpResponse(dialog('ok', 'success', '登录成功',{"token":user.token}));
     _login(request,user)
     if auto_login == "true" :
-        rep.set_cookie("qg_t",user.token)
-        rep.set_cookie("auto_login",auto_login)
+        rep.set_cookie("qg_t",user.token,domain="qiegaoshijie.club")
+        rep.set_cookie("auto_login",auto_login,domain="qiegaoshijie.club")
     else :
-        rep.delete_cookie("qg_t")
-        rep.delete_cookie("auto_login")
+        rep.delete_cookie("qg_t",domain="qiegaoshijie.club")
+        rep.delete_cookie("auto_login",domain="qiegaoshijie.club")
     return rep
 
 def get_uuid_from_name(name):
