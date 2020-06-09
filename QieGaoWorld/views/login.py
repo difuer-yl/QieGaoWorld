@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-06-09 13:11:42
+@LastEditTime: 2020-06-09 13:16:48
 @LastEditors: chiaki
 '''
 import json
@@ -46,7 +46,7 @@ def test(request):
     return render(request, "dialog.html", {})
 
 def _login_verify(request):
-    SPIGOT_PATH=Conf.objects.get("SPIGOT_PATH")
+    SPIGOT_PATH=Conf.objects.get(key="SPIGOT_PATH")
     # username=''
     # password=''
     t = str(request.COOKIES.get("qg_t", None))
@@ -132,7 +132,7 @@ def _login_verify(request):
 # @api_view(['POST'])
 def login_verify(request):
 
-    SPIGOT_PATH=Conf.objects.get("SPIGOT_PATH")
+    SPIGOT_PATH=Conf.objects.get(key="SPIGOT_PATH")
     
     url = "./"
     username = str(request.POST.get("username", None))
@@ -271,7 +271,7 @@ def get_uuid_from_name(name):
 
 
 def get_nickname_from_uuid(uuid):
-    SPIGOT_PATH=Conf.objects.get("SPIGOT_PATH")
+    SPIGOT_PATH=Conf.objects.get(key="SPIGOT_PATH")
     try:
         with open(SPIGOT_PATH+("/plugins/Essentials/userdata/%s.yml" % uuid)) as f:
             lines = f.readlines()
