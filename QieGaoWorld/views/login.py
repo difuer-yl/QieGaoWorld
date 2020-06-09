@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-06-09 13:29:18
+@LastEditTime: 2020-06-09 13:31:08
 @LastEditors: chiaki
 '''
 import json
@@ -46,7 +46,7 @@ def test(request):
     return render(request, "dialog.html", {})
 
 def _login_verify(request):
-    SPIGOT_PATH=str(Conf.objects.get(key="SPIGOT_PATH"))['content']['content']
+    SPIGOT_PATH=str(Conf.objects.get(key="SPIGOT_PATH"))['content']
     # username=''
     # password=''
     t = str(request.COOKIES.get("qg_t", None))
