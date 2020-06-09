@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-04-14 20:25:25
+@LastEditTime: 2020-06-09 13:11:42
 @LastEditors: chiaki
 '''
 import json
@@ -20,7 +20,7 @@ from django.contrib.auth import authenticate,login as _login
 
 from QieGaoWorld import parameter
 from QieGaoWorld import settings
-from QieGaoWorld.models import User
+from QieGaoWorld.models import User,Conf
 # from django.contrib.auth.models import User
 from QieGaoWorld.views.dialog import dialog
 from QieGaoWorld import common,parameter
@@ -46,6 +46,7 @@ def test(request):
     return render(request, "dialog.html", {})
 
 def _login_verify(request):
+    SPIGOT_PATH=Conf.objects.get("SPIGOT_PATH")
     # username=''
     # password=''
     t = str(request.COOKIES.get("qg_t", None))
@@ -59,13 +60,13 @@ def _login_verify(request):
             return render(request, "error.html", {"error_message": "您还未登录或登录状态已失效，请重新登录！!"})
     else:
         return render(request, "error.html", {"error_message": "您还未登录或登录状态已失效，请重新登录！"})
-    with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
+    with open(SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
         plays = f.read()
         if "- " + username.lower() not in plays:
             return render(request, "error.html", {"error_message": "登录失败！您的帐号不在白名单!"})
     
 
-    with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
+    with open(SPIGOT_PATH + "/banned-players.json", "rb") as f:
         plays = json.loads(f.read())
         s = "%"
         for b in plays:
@@ -106,7 +107,7 @@ def _login_verify(request):
     request.session.set_expiry(3600)  # 1小时有效期
     
 
-    with open(parameter.SPIGOT_PATH+"/ops.json", "r") as f:
+    with open(SPIGOT_PATH+"/ops.json", "r") as f:
         ops = f.read()
         a = (json.loads(ops))
         s = "%"
@@ -131,7 +132,7 @@ def _login_verify(request):
 # @api_view(['POST'])
 def login_verify(request):
 
-
+    SPIGOT_PATH=Conf.objects.get("SPIGOT_PATH")
     
     url = "./"
     username = str(request.POST.get("username", None))
@@ -149,14 +150,14 @@ def login_verify(request):
     password_md5 = hashlib.md5()   
     password_md5.update(password.encode('utf-8'))   
     cursor=connection.cursor()
-    with open(parameter.SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
+    with open(SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
         plays = f.read()
         if "- " + username.lower() not in plays:
             return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
             # return Response(dialog('failed', 'danger', '您不在白名单'))
     
 
-    with open(parameter.SPIGOT_PATH + "/banned-players.json", "rb") as f:
+    with open(SPIGOT_PATH + "/banned-players.json", "rb") as f:
         plays = json.loads(f.read())
         s = "%"
         for b in plays:
@@ -230,7 +231,7 @@ def login_verify(request):
     request.session['register_time'] = user.register_time
     request.session['avatar'] = user.avatar
     request.session.set_expiry(3600)  # 1小时有效期
-    with open(parameter.SPIGOT_PATH+"/ops.json", "r") as f:
+    with open(SPIGOT_PATH+"/ops.json", "r") as f:
         ops = f.read()
         a = (json.loads(ops))
         s = "%"
@@ -270,9 +271,9 @@ def get_uuid_from_name(name):
 
 
 def get_nickname_from_uuid(uuid):
-    
+    SPIGOT_PATH=Conf.objects.get("SPIGOT_PATH")
     try:
-        with open(parameter.SPIGOT_PATH+("/plugins/Essentials/userdata/%s.yml" % uuid)) as f:
+        with open(SPIGOT_PATH+("/plugins/Essentials/userdata/%s.yml" % uuid)) as f:
             lines = f.readlines()
             for l in lines:
                 if "nickname: " in l:

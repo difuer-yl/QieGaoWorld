@@ -63,12 +63,14 @@ def handle_uploaded_file(f):
 def user_center(request):
     announcements = announcement_list(request)
 
+    MC_SERVER=Conf.objects.get("MC_SERVER")
+
     na = len(DeclareAnimals.objects.all())
     nb = len(DeclareBuildings.objects.all())
     nc = len(Cases.objects.all())
     try:
         from mcstatus import MinecraftServer
-        server = MinecraftServer.lookup(Para.MC_SERVER)
+        server = MinecraftServer.lookup(MC_SERVER)
         status = server.status()
 
         mot = status.description['text']
@@ -91,26 +93,26 @@ def user_center(request):
 
         context = {
             'favicon': fav,
-            'server_address': Para.MC_SERVER,
+            'server_address': MC_SERVER,
             'online_players_list': user,
             'online_players_number': opn,
             'number_buildings': nb,
             'number_animals': na,
             'number_cases': nc,
-            'permissions': request.session['permissions'],
+            'permissions': request.session.get("permissions",""),
             'announcements': announcements,
             "latency":status.latency
         }
     except Exception as e:
         context = {
             'favicon': '',
-            'server_address': Para.MC_SERVER,
+            'server_address': MC_SERVER,
             'online_players_list': [],
             'online_players_number': '超时',
             'number_buildings': nb,
             'number_animals': na,
             'number_cases': nc,
-            'permissions': request.session['permissions'],
+            'permissions': request.session.get("permissions",""),
             'announcements': announcements,
             "latency":-1
         }
@@ -137,13 +139,13 @@ def page_declaration_center(request):
             'buildings': DeclareBuildings.objects.count(),
             'skull': SkullCustomize.objects.count(),
             'maps': Maps.objects.count(),
-            'permissions': request.session['permissions'],
+            'permissions': request.session.get("permissions",""),
         }
     else:
         content = {
             'animals': DeclareAnimals.objects.count(),
             'buildings': DeclareBuildings.objects.count(),
-            'permissions': request.session['permissions'],
+            'permissions': request.session.get("permissions",""),
         }
     return render(request, "dashboard/declaration/center.html", content)
 
@@ -158,7 +160,7 @@ def page_declare_animals(request):
     # my_animals = animals_list(request, 'user')
     content = {
         # 'my_animals': my_animals,
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
     return render(request, "dashboard/declaration/animals.html", content)
 
@@ -168,7 +170,7 @@ def page_declare_buildings(request):
     # my_building = buildings_list(request, 'user')  # 这里选择获取当前登录用户的obj
     content = {
         # 'buildings': my_building,
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
     return render(request, "dashboard/declaration/buildings.html", content)
 
@@ -204,17 +206,20 @@ def dashboard(request):
     per=request.user.get_all_permissions()
 
     menu=Menu.objects.filter(Q(code__exact=None)|Q(code__in=per)).filter(status=True,type=1)
+    
+    
     parent_id=[]
     for m in menu:
         if m.parent not in parent_id:
             parent_id.append(m.parent)
     
     parent=Menu.objects.filter(status=True,id__in=parent_id).order_by("list")
-    
+    print(len(parent))
+    # return 
     context = {
-        'avatar': request.session['avatar'],
-        'nickname': request.session['nickname'],
-        'permissions': request.session['permissions'],
+        'avatar': request.session.get("avatar",''),
+        'nickname': request.session.get("nickname",''),
+        'permissions': request.session.get("permissions",''),
         "menu":menu,
         "parent":parent
     }
@@ -226,7 +231,7 @@ def page_whitelist(request):
     white_list=whitelist(request)
     context = {
         'list': white_list,
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         'len':len(white_list)
     }
 
@@ -238,7 +243,7 @@ def system_menu(request):
 
     menu=Menu.objects.filter(Q(code='')|Q(code__in=per))
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "menu":menu
     }
 
@@ -248,7 +253,7 @@ def page_wenjuan(request):
 
     _type=Conf.objects.get(key="wenjuan_type")
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "wenjuan":problem_list(request),
         "type":json.loads(_type.content)
     }
@@ -260,7 +265,7 @@ def page_wenjuan(request):
 def page_skull(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         # "skull":skull.skull_list(request)
     }
 
@@ -270,7 +275,7 @@ def page_skull(request):
 def page_maps(request):
     # _list=declare.maps_list(request,"user")
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         # "list":_list,
         # "page":common.page("maps",_list)
     }
@@ -281,7 +286,7 @@ def page_maps(request):
 def page_para(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "list":system.para_list(),
     }
 
@@ -292,7 +297,7 @@ def page_logs(request):
     
 
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
 
     return render(request, "dashboard/system/logs.html", context)
@@ -301,7 +306,7 @@ def page_logs(request):
 def page_society(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "list":society.society_list()
     }
 
@@ -310,7 +315,7 @@ def page_society(request):
 def page_task_list(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "list":task.task_list(request,True),
         "type":"list",
         "title":"任务列表"
@@ -320,7 +325,7 @@ def page_task_list(request):
 def page_task(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "list":task.task_list(request),
         "title":"我的任务"
     }
@@ -330,7 +335,7 @@ def page_task(request):
 def page_group_list(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "list":user.group_list(request),
     }
 
@@ -338,7 +343,7 @@ def page_group_list(request):
 def page_rawerd(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
         "list":signin.reward_list(request),
     }
 
@@ -346,14 +351,14 @@ def page_rawerd(request):
 def page_signin(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
 
     return render(request, "dashboard/signin/logs.html", context)
 def page_police_hall(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
 
     return render(request, "dashboard/police/police_hall.html", context)
@@ -361,21 +366,21 @@ def page_message(request):
     
     context = {
         "message":ops.message_list(request),
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
 
     return render(request, "dashboard/ops/message.html", context)
 def page_ops_log(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
 
     return render(request, "dashboard/ops/log.html", context)
 def cms_book_ist(request):
     
     context = {
-        'permissions': request.session['permissions'],
+        'permissions': request.session.get("permissions",""),
     }
 
     return render(request, "dashboard/cms/book.html", context)
