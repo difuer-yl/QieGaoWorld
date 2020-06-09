@@ -63,7 +63,7 @@ def handle_uploaded_file(f):
 def user_center(request):
     announcements = announcement_list(request)
 
-    MC_SERVER=Conf.objects.get(key="MC_SERVER")
+    MC_SERVER=Conf.objects.get(key="MC_SERVER")['content']
 
     na = len(DeclareAnimals.objects.all())
     nb = len(DeclareBuildings.objects.all())
