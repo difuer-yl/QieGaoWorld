@@ -13,7 +13,7 @@ from .views.decorator import check_login, check_post
 from .views.settings import page_settings
 from .views.ops import whitelist
 from .views.wenjuan import problem_list
-from .views import system,society,skull,task,user,declare,signin,ops,cms,demand,user
+from .views import system,society,skull,task,user,declare,signin,ops,cms,demand,user,fish
 from QieGaoWorld import parameter as Para 
 from QieGaoWorld.models import DeclareBuildings, DeclareAnimals, Cases,Menu,Conf,SkullCustomize,Logs,Maps
 from QieGaoWorld import common
@@ -480,5 +480,15 @@ def dashboard_page(request):
         return demand.index(request)
     if request.POST.get("page", None) == "test":
         return user.test(request)
+    if request.POST.get("page", None) == "fish":
+        return fish.fish_index(request)
+    if request.POST.get("page", None) == "rarity":
+        return fish.rarity(request)
+    if request.POST.get("page", None) == "fish_pond":
+        return fish.pond(request)
+    if request.POST.get("page", None) == "fish_pool":
+        return fish.fish_pool(request)
+    if request.POST.get("page", None) == "mc_icon":
+        return fish.icon(request)
 
     return HttpResponse("Response: " + request.POST.get("page", None))

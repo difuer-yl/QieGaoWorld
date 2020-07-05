@@ -2,7 +2,7 @@
 @Author: chiaki
 @Date: 2019-11-25 23:21:33
 @LastEditors: chiaki
-@LastEditTime: 2020-03-20 18:07:00
+@LastEditTime: 2020-07-04 10:57:07
 @Description: 
 '''
 """QieGaoWorld URL Configuration
@@ -26,7 +26,7 @@ from django.urls import path
 from . import view
 from .views import login, logout
 from .views import avatar, police
-from .views import declare, register,ops,system,wenjuan,skull,society,task,user,signin,cms,api,demand
+from .views import declare, register,ops,system,wenjuan,skull,society,task,user,signin,cms,api,demand,fish
 from .views import announcement
 # from graphene_django.views import GraphQLView
 
@@ -88,5 +88,6 @@ urlpatterns = [
     path("cms/<str:s>", cms.url),
     path("api/<str:s>", api.url),
     path("demand/<str:s>", demand.url),
+    path("fish/<str:s>", fish.url),
     # path("graphql", GraphQLView.as_view(graphiql=True)),
 ]
