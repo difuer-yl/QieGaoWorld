@@ -269,3 +269,58 @@ class Resolution(models.Model):
     demand_id=models.IntegerField(default=0,null=False)
     type=models.IntegerField(default=0,null=False) #0市长决议1糕委会决议2开发反馈
     time=models.DateTimeField(auto_now=True)
+
+
+#鱼池
+class FishPond(models.Model):
+    name=models.CharField(max_length=100)#名称
+    status=models.BooleanField() #是否启用
+    create_time=models.DateTimeField(auto_now_add=True)
+    # fishs=models.ManyToManyField(Fish,related_name="pond_id",related_query_name="id")
+    # def get_fish(self):
+    #     return Fish.objects.filter(pond_id=self.id)
+#稀有度
+class Rarity(models.Model):
+    name=models.CharField(max_length=100) #名称
+    chance=models.FloatField() #爆率
+    color=models.CharField(max_length=10)#颜色
+    commands=models.TextField() #命令
+    catch_announce=models.IntegerField() #广播距离 -1为全服
+    status=models.IntegerField() #是否启用
+    create_time=models.DateTimeField(auto_now_add=True)
+#鱼
+
+
+
+
+
+
+
+#鱼塘
+class FishPool(models.Model):
+    name=models.CharField(max_length=100)#名称
+    type=models.IntegerField() #区域类型  1矩形 2圆形
+    area=models.CharField(max_length=200) #区域数据 x1:z1:x2:z2 or x:z:r
+    status=models.BooleanField() #是否启用
+    create_time=models.DateTimeField(auto_now_add=True)
+
+class Icon(models.Model):
+    name=models.CharField(max_length=100)
+    code=models.CharField(max_length=100,unique=True)
+    icon=models.CharField(max_length=255)
+    gif=models.CharField(max_length=255)
+
+class Fish(models.Model):
+    name=models.CharField(max_length=100) #名称
+    min=models.IntegerField() #最小尺寸
+    max=models.IntegerField() #最大尺寸
+    # rarity_id=models.IntegerField() #稀有度
+    rarity=models.ForeignKey(Rarity,on_delete=models.DO_NOTHING)
+    icon=models.ForeignKey(Icon,on_delete=models.DO_NOTHING,to_field="code",db_column="icon_code")
+    # pond_id=models.IntegerField() #鱼池
+    pond=models.ForeignKey(FishPond,on_delete=models.DO_NOTHING)
+    icons=models.TextField() #icon相关
+    commands=models.TextField() #触发命令
+    conditions=models.TextField() #条件
+    status=models.BooleanField() #是否启用
+    create_time=models.DateTimeField(auto_now_add=True)
