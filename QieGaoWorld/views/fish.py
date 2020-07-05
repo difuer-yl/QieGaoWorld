@@ -2,7 +2,7 @@
 @Author: chiaki
 @Date: 2020-07-03 22:57:18
 @LastEditors: chiaki
-@LastEditTime: 2020-07-05 11:55:27
+@LastEditTime: 2020-07-05 13:04:21
 @Description: 
 '''
 
@@ -224,6 +224,9 @@ def icon_edit(request):
     name=request.POST.get("name","")
     if name == "":
         return HttpResponse(dialog('failed', 'danger', '请填写名称!'))
+    code=request.POST.get("code","")
+    if code == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写标识!'))
     icon=request.POST.get("icon","")
     if name == "":
         return HttpResponse(dialog('failed', 'danger', '请填写静态图!'))
@@ -233,12 +236,13 @@ def icon_edit(request):
     
     _id=request.POST.get("id","")
     if _id == "":
-        info=Icon(name=name,status=1,gif=gif,icon=icon)
+        info=Icon(name=name,status=1,gif=gif,icon=icon,code=code)
     else:
         info=Icon.objects.get(id=_id)
         info.name=name
         info.gif=gif
         info.icon=icon
+        info.code=code
     
     info.save()
     return HttpResponse(dialog('ok', 'success', '保存成功!'))

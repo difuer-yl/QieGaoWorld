@@ -67,7 +67,7 @@
                 <div class="uk-width-expand" >
 
                     <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center " uk-grid>
-                        <div class=""><span class="" >{{ b.name }}</span></div>
+                        <div class=""><span class="" >{{ b.name }}<small>{{b.code}}</small></span></div>
                         <div class=""><img src="{{ b.icon }}" alt="" style="width: 25px;"></div>
                         <div class=""><img src="{{ b.gif }}" alt="" style="width: 25px;"></div>
                     </div>
@@ -127,6 +127,16 @@
                     <div class="uk-margin">
                         <div class="uk-grid-small" uk-grid>
                             <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">唯一标识</label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <input type="text" name="code" id="" class="uk-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
                                 <label class="uk-form-label" for="form-horizontal-text">静态图</label>
                             </div>
                             <div class="uk-width-4-5@s">
@@ -157,7 +167,7 @@
 <script>
     $(function() {
         $("#save").click(function(){
-            $.post("/fish/pond_edit",$("[name=info]").serialize(),function(obj){
+            $.post("/fish/icon_edit",$("[name=info]").serialize(),function(obj){
                 if (obj.status === "ok") {
                     UIkit.notification({
                         message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
@@ -188,7 +198,7 @@
             var id = $(this).data("id");
             var _this = $(this);
 
-            $.post("signin/reward_del?_=" + Date.parse(new Date()), {
+            $.post("fish/icon_del?_=" + Date.parse(new Date()), {
                 "id": id,
 
             }, function(obj) {
@@ -213,7 +223,7 @@
             var _this = $(this);
             var id=_this.data('id');
             var title=_this.attr("title");
-            $.post("fish/pond_status?_=" + Date.parse(new Date()), {
+            $.post("fish/icon_status?_=" + Date.parse(new Date()), {
                 "status": status,
                 "id":id
             }, function(obj) {

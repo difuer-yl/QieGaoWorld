@@ -310,7 +310,7 @@
             var id = $(this).data("id");
             var _this = $(this);
 
-            $.post("signin/reward_del?_=" + Date.parse(new Date()), {
+            $.post("fish/fish_del?_=" + Date.parse(new Date()), {
                 "id": id,
 
             }, function(obj) {
@@ -335,7 +335,7 @@
             var _this = $(this);
             var id=_this.data('id');
             var title=_this.attr("title");
-            $.post("signin/reward_status?_=" + Date.parse(new Date()), {
+            $.post("fish/fish_status?_=" + Date.parse(new Date()), {
                 "status": status,
                 "id":id
             }, function(obj) {

@@ -309,6 +309,7 @@ class Icon(models.Model):
     code=models.CharField(max_length=100,unique=True)
     icon=models.CharField(max_length=255)
     gif=models.CharField(max_length=255)
+    status=models.BooleanField() #是否启用
 
 class Fish(models.Model):
     name=models.CharField(max_length=100) #名称
