@@ -1,3 +1,10 @@
+'''
+@Author: chiaki
+@Date: 2019-10-16 00:24:28
+@LastEditors: chiaki
+@LastEditTime: 2020-07-04 11:25:25
+@Description: 
+'''
 from django import template
 
 register = template.Library()
@@ -42,3 +49,7 @@ def option(value,args):
 @register.filter
 def length(value,args):
     return len(value)
+
+@register.filter
+def get_fields(obj):
+    return [(field.name, field.value_to_string(obj)) for field in obj._meta.fields]
