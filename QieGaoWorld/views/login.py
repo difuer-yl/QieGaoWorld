@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-06-09 13:34:09
+@LastEditTime: 2020-07-04 09:49:36
 @LastEditors: chiaki
 '''
 import json
@@ -150,7 +150,7 @@ def login_verify(request):
     password_md5 = hashlib.md5()   
     password_md5.update(password.encode('utf-8'))   
     cursor=connection.cursor()
-    with open(SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r") as f:
+    with open(SPIGOT_PATH + "/plugins/WhiteList/config.yml", "r", encoding='UTF-8') as f:
         plays = f.read()
         if "- " + username.lower() not in plays:
             return HttpResponse(dialog('failed', 'danger', '您不在白名单'))
