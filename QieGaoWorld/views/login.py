@@ -2,7 +2,7 @@
 @Description: In User Settings Edit
 @Author: your name
 @Date: 2018-09-14 23:31:44
-@LastEditTime: 2020-07-04 09:49:36
+@LastEditTime: 2020-07-17 20:05:32
 @LastEditors: chiaki
 '''
 import json
@@ -194,13 +194,14 @@ def login_verify(request):
     # if "playername=" + _username != user or ("password=" + password != passwd and "password=" + password_md5.hexdigest() != passwd ):
     #     return HttpResponse(dialog('failed', 'danger', '用户名或密码错误'))
 
-    user = User.objects.get(username=username)
+    user = User.objects.filter(username=username).first()
     if user is None :
         # User.objects.create_user(username,"",password)
         user = User(username=username, password=password, register_time=(time.time()))
         # obj.save()
         # user = User.objects.filter(username=username, password=password)
-    # user = user[0]
+    # else:
+    #     user = user[0]
     uuid_ = get_uuid_from_name(username)  # 这里uuid_防止与uuid库名字冲突
     nickname = get_nickname_from_uuid(uuid_)
     user.uuid = uuid_
