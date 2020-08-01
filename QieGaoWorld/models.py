@@ -313,8 +313,8 @@ class Icon(models.Model):
 
 class Fish(models.Model):
     name=models.CharField(max_length=100) #名称
-    min=models.IntegerField() #最小尺寸
-    max=models.IntegerField() #最大尺寸
+    min=models.FloatField() #最小尺寸
+    max=models.FloatField() #最大尺寸
     # rarity_id=models.IntegerField() #稀有度
     rarity=models.ForeignKey(Rarity,on_delete=models.DO_NOTHING)
     icon=models.ForeignKey(Icon,on_delete=models.DO_NOTHING,to_field="code",db_column="icon_code")
