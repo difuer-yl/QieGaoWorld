@@ -152,7 +152,11 @@
                                 <label class="uk-form-label" for="form-horizontal-text">使用鱼池 </label>
                             </div>
                             <div class="uk-width-4-5@s">
-                                <input class="uk-input" name="pond_id" type="text" >
+                                <select name="pond_id[]" class="uk-select" multiple="multiple" id="">
+                                    {% for bb in pond %}
+                                <option value="{{bb.id}}">{{bb.name}}</option>
+                                {% endfor %}
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -162,7 +166,11 @@
                                 <label class="uk-form-label" for="form-horizontal-text">使用鱼塘 </label>
                             </div>
                             <div class="uk-width-4-5@s">
-                                <input class="uk-input" name="pool_id" type="text" >
+                                <select name="pool_id[]" class="uk-select" multiple="multiple" id="">
+                                    {% for bb in pool %}
+                                <option value="{{bb.id}}">{{bb.name}}</option>
+                                {% endfor %}
+                                </select>
                             </div>
                         </div>
                     </div>

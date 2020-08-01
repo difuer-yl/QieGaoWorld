@@ -2,7 +2,7 @@
 @Author: chiaki
 @Date: 2020-07-03 22:57:18
 @LastEditors: chiaki
-@LastEditTime: 2020-08-01 22:19:00
+@LastEditTime: 2020-08-02 00:02:52
 @Description: 
 '''
 
@@ -278,9 +278,11 @@ def match(request):
     for i in range(0,len(list)):
         list[i].start_time=(datetime.datetime.fromtimestamp(list[i].start_time))
         list[i].type=('','周赛','月赛','季赛','年赛','其他')[int(list[i].type)]
+    pond=FishPond.objects.filter(status=1)
+    pool=FishPool.objects.filter(status=1)
         
 
-    return render(request, 'dashboard/fish/match.html', {"list":list})
+    return render(request, 'dashboard/fish/match.html', {"list":list,"pond":pond,"pool":pool})
 
 def match_edit(request):
     name=request.POST.get("name","")
@@ -293,10 +295,12 @@ def match_edit(request):
     length=request.POST.get("length","")
     if length == "":
         return HttpResponse(dialog('failed', 'danger', '请填写时长!'))
-    pond_id=request.POST.get("pond_id","")
+    pond_id=request.POST.getlist("pond_id[]","")
+    pond_id=",".join(pond_id)
     if pond_id == "":
         return HttpResponse(dialog('failed', 'danger', '请填写启用鱼池!'))
-    pool_id=request.POST.get("pool_id","")
+    pool_id=request.POST.getlist("pool_id[]","")
+    pool_id=",".join(pool_id)
     if pool_id == "":
         return HttpResponse(dialog('failed', 'danger', '请填写启用鱼塘!'))
     
@@ -312,7 +316,7 @@ def match_edit(request):
         info.name=name
     
     info.save()
-    return HttpResponse(dialog('ok', 'success', '保存成功!'))
+    return HttpResponse(dialog('ok1', 'success', '保存成功!'))
 
 def match_del(request):
     if "%op%" not in request.session.get('permissions', ''):
