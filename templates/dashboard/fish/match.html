@@ -1,0 +1,269 @@
+{% load static %}
+{% load extras %}
+<h2>鱼赛管理
+    <small style="color: #666666; font-size: medium">Match Manage</small>
+    <button class="uk-button uk-button-default uk-button-primary uk-align-right uk-margin-small-top "
+            uk-toggle="target: #info-box" onclick='$("[name=info]")[0].reset()'>新增鱼赛
+    </button>
+    <button class=" add" style="display:none"
+            uk-toggle="target: #info-box" >新增鱼赛
+    </button>
+</h2>
+<hr class="uk-margin" />
+<p class="uk-text-meta">鱼赛列表 </p>
+<div class="uk-alert-primary" uk-alert id="tips" style="display:none">
+    <a class="uk-alert-close" uk-close></a>
+    <p></p>
+</div>
+<table class="uk-table uk-table-divider uk-table-striped uk-table-hover" style="display: none;">
+        <caption></caption>
+        <thead>
+            <tr>
+                <th class="uk-width-medium">名称</th>
+                <th class="uk-width-small uk-visible@s">爆率</th>
+                <th class="uk-width-small uk-visible@s">颜色</th>
+                <th class="uk-width-small uk-visible@s">状态</th>
+                <!-- <th class="uk-width-small uk-visible@s">数量</th> -->
+                <th class="uk-width-small uk-visible@s">添加时间</th>
+                <th class="uk-width-small "></th>
+            </tr>
+        </thead>
+        <tbody style="display: none;">
+            {% for b in list %}
+            <tr>
+                <td>
+                    <span class="" >{{ b.name }}</span>
+                </td>
+                <td>
+                    <span class="" >{{ b.chance }}</span>
+                </td>
+                <td>
+                    <span class="" >{{b.color}}</span>
+                </td>
+                <td>
+                    <span class="" >{{ b.status }}</span>
+                </td>
+                <td>
+                    <span class="" title="" >{{b.create_time}}</span>
+                </td>
+                <td>
+                    <a class="uk-icon-link dryedit edit" id="{{ b.id }}" data-number="{{ b.number}}" data-rew="{{b.reward_id}}" data-mode="{{b.mode}}" data-start="{{b.start_time}}" data-end="{{b.end_time}}" data-relemode="{{b.release_mode}}" data-reletime="{{b.release_time}}" data-name="{{b.name}}" uk-icon="file-edit"></a> 
+                    <a class=" uk-icon-link star" data-status="{{b.status}}" data-id="{{b.id}}" {% if b.status  %} style="color:royalblue" title="停用"{% else %} title="启用"  {% endif %} uk-icon="star" ></a>
+                    <a class="uk-icon-link del" data-id="{{b.id}}" style="color:red" uk-icon="trash"></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <ul uk-accordion="multiple: true" >
+
+        {% for b in list %} 
+        
+        <li class="uk-padding-small uk-box-shadow-small " style="color: darkgrey"  data-id="{{b.id}}" >
+            <div class="uk-accordion-title uk-width-1-1" style="display: inline-flex;" uk-grid href="#">
+                
+                <!-- <div class="uk-width-expand" >{{b.name}}    <span class="uk-margin-small-left" uk-icon="tag"></span><span style="font-size:14px" >{{b.mode_text}}</span> </div> -->
+                <div class="uk-width-expand" >
+
+                    <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center " uk-grid>
+                        <div class=""><span class="" >{{ b.name }}</span></div>
+                        <div class=" "><span class="" >{{ b.start_time }}</span></div>
+                        <div class="">
+                        <span class="" >{{ b.type }}</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="uk-width-auto">
+                    <a class="uk-icon-link dryedit edit"
+
+                    {% for key, val in b|get_fields %}
+                        data-{{ key }}="{{ val }}"
+                    {% endfor %}
+                    
+                   uk-icon="file-edit"></a> 
+                    <!-- <a class=" uk-icon-link star" data-status="{{b.status}}" data-id="{{b.id}}" {% if b.status  %} style="color:royalblue" title="停用"{% else %} title="启用"  {% endif %} uk-icon="star" ></a> -->
+                    <a class="uk-icon-link del" data-id="{{b.id}}" style="color:red" uk-icon="trash"></a>
+                </span>
+            </div>
+                <div class="uk-accordion-content">
+                    <div>
+                        <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center " uk-grid>
+                            <div class=" ">
+                                {% for bb in b.fish_set.all %}
+                                <span class="" >{{ bb.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+    
+    </ul>
+    
+
+    {% autoescape off %}
+      
+    {% endautoescape %}
+    <div id="info-box" class="uk-flex-top" bg-close="false" esc-close="false" uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+    
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">签到奖励</h2>
+            </div>
+            <div class="uk-modal-body">
+                <form class="uk-form-horizontal" name="info" action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">名称</label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <input type="text" name="name" id="" class="uk-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">开始时间</label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <input type="date" name="start_time" id="" class="uk-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">持续时长</label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <input type="text" name="length" id="" class="uk-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">使用鱼池 </label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <input class="uk-input" name="pond_id" type="text" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-5@s">
+                                <label class="uk-form-label" for="form-horizontal-text">使用鱼塘 </label>
+                            </div>
+                            <div class="uk-width-4-5@s">
+                                <input class="uk-input" name="pool_id" type="text" >
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="id">
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right  ">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+                <button class="uk-button uk-button-primary" type="button" id="save">确认</button>
+            </div>
+            
+        </div>
+    </div>
+<script>
+    $(function() {
+        $("#save").click(function(){
+            $.post("/fish/match_edit",$("[name=info]").serialize(),function(obj){
+                if (obj.status === "ok") {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                        status: 'success',
+                        timeout: 2000
+                    });
+                    UIkit.modal("#info-box").hide();
+                    window.location.reload()
+                } else {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                        status: 'danger',
+                        timeout: 2000
+                    })
+                }
+            },"json")
+        });
+        $(".edit").click(function(){
+            var data=$(this).data();
+            
+            for(let key in data){
+                $("[name="+key+"]").val(data[key]);
+            } 
+            
+            $(".add").click()
+        });
+        $(".del").click(function() {
+            var id = $(this).data("id");
+            var _this = $(this);
+
+            $.post("fish/match_del?_=" + Date.parse(new Date()), {
+                "id": id,
+
+            }, function(obj) {
+                if (obj.status === "ok") {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
+                        status: 'success',
+                        timeout: 2000
+                    });
+                    _this.parents("tr").remove();
+                } else {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                        status: 'danger',
+                        timeout: 2000
+                    })
+                }
+            }, "json")
+        });
+        $(".star").click(function() {
+            var status = $(this).data("status");
+            var _this = $(this);
+            var id=_this.data('id');
+            var title=_this.attr("title");
+            $.post("fish/match_status?_=" + Date.parse(new Date()), {
+                "status": status,
+                "id":id
+            }, function(obj) {
+                if (obj.status === "ok") {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: check\'></span> ' + title+"成功！",
+                        status: 'success',
+                        timeout: 2000
+                    });
+                    if(status=="True"){
+                        _this.css("color","");
+                        _this.parents("tr").css("color","darkgrey");
+                        _this.data("status","False");
+                        _this.attr("title","启用")
+                    }else{
+                        _this.css("color","royalblue");
+                        _this.parents("tr").css("color","");
+                        _this.data("status","True");
+                        _this.attr("title","停用")
+                    }
+                } else {
+                    UIkit.notification({
+                        message: '<span uk-icon=\'icon: close\'></span> ' + obj.msg,
+                        status: 'danger',
+                        timeout: 2000
+                    })
+                }
+            }, "json")
+        });
+    })
+</script>

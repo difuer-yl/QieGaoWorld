@@ -325,3 +325,13 @@ class Fish(models.Model):
     conditions=models.TextField() #条件
     status=models.BooleanField() #是否启用
     create_time=models.DateTimeField(auto_now_add=True)
+
+#鱼赛
+class FishMatch(models.Model):
+    name=models.CharField(max_length=100) #比赛名称
+    start_time=models.IntegerField() #开始时间
+    length=models.IntegerField() #持续时长
+    type=models.IntegerField() #比赛类型 1周赛 2月赛 3季赛  4年赛 5其他
+    pond_id=models.CharField(max_length=500) #鱼池id
+    pool_id=models.CharField(max_length=500) #鱼塘id
+    time=models.IntegerField()

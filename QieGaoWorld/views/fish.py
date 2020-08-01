@@ -2,15 +2,15 @@
 @Author: chiaki
 @Date: 2020-07-03 22:57:18
 @LastEditors: chiaki
-@LastEditTime: 2020-07-05 13:04:21
+@LastEditTime: 2020-07-12 13:26:58
 @Description: 
 '''
 
-import json
+import json,datetime
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from QieGaoWorld.models import Fish,FishPond,FishPool,Rarity,Icon
+from QieGaoWorld.models import Fish,FishPond,FishPool,Rarity,Icon,FishMatch
 from QieGaoWorld.views.dialog import dialog
 from QieGaoWorld.views.decorator import check_post
 from QieGaoWorld.views.decorator import check_login
@@ -228,10 +228,10 @@ def icon_edit(request):
     if code == "":
         return HttpResponse(dialog('failed', 'danger', '请填写标识!'))
     icon=request.POST.get("icon","")
-    if name == "":
+    if icon == "":
         return HttpResponse(dialog('failed', 'danger', '请填写静态图!'))
     gif=request.POST.get("gif","")
-    if name == "":
+    if gif == "":
         return HttpResponse(dialog('failed', 'danger', '请填写动态图!'))
     
     _id=request.POST.get("id","")
@@ -271,3 +271,68 @@ def icon_status(request):
     return HttpResponse(dialog('ok', 'success', 'ok!'))
 
 
+#比赛
+def match(request):
+
+    list=FishMatch.objects.all()
+    for i in range(0,len(list)):
+        list[i].start_time=(datetime.datetime.fromtimestamp(list[i].start_time))
+        list[i].type=('','周赛','月赛','季赛','年赛','其他')[int(list[i].type)]
+        
+
+    return render(request, 'dashboard/fish/match.html', {"list":list})
+
+def match_edit(request):
+    name=request.POST.get("name","")
+    if name == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写名称!'))
+    start_time=request.POST.get("start_time","")
+    start_time=datetime.datetime.fromisoformat(start_time).timestamp()
+    if start_time == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写开始时间!'))
+    length=request.POST.get("length","")
+    if length == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写时长!'))
+    pond_id=request.POST.get("pond_id","")
+    if pond_id == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写启用鱼池!'))
+    pool_id=request.POST.get("pool_id","")
+    if pool_id == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写启用鱼塘!'))
+    
+    _id=request.POST.get("id","")
+    if _id == "":
+        info=FishMatch(name=name,start_time=start_time,length=length,pond_id=pond_id,pool_id=pool_id)
+    else:
+        info=FishMatch.objects.get(id=_id)
+        info.start_time=start_time
+        info.length=length
+        info.pond_id=pond_id
+        info.pool_id=pool_id
+        info.name=name
+    
+    info.save()
+    return HttpResponse(dialog('ok', 'success', '保存成功!'))
+
+def match_del(request):
+    if "%op%" not in request.session.get('permissions', ''):
+        return HttpResponse(dialog('failed', 'danger', '权限不足!'))
+    id=request.POST.get('id',None)
+    info=Icon.objects.get(id=id)
+    
+    info.delete()
+    return HttpResponse(dialog('ok', 'success', '删除成功!'))
+
+def match_status(request):
+    if "%op%" not in request.session.get('permissions', ''):
+        return HttpResponse(dialog('failed', 'danger', '权限不足!'))
+    status=str( request.POST.get('status',None))
+    id=request.POST.get('id',None)
+    info=Icon.objects.get(id=id)
+    
+    if(status == "True"):
+        info.status=False
+    else:
+        info.status=True
+    info.save()
+    return HttpResponse(dialog('ok', 'success', 'ok!'))

@@ -487,7 +487,9 @@ def dashboard_page(request):
     if request.POST.get("page", None) == "fish_pond":
         return fish.pond(request)
     if request.POST.get("page", None) == "fish_pool":
-        return fish.fish_pool(request)
+        return fish.pool(request)
+    if request.POST.get("page", None) == "fish_match":
+        return fish.match(request)
     if request.POST.get("page", None) == "mc_icon":
         return fish.icon(request)
 
