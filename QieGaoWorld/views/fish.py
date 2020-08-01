@@ -2,7 +2,7 @@
 @Author: chiaki
 @Date: 2020-07-03 22:57:18
 @LastEditors: chiaki
-@LastEditTime: 2020-07-12 13:26:58
+@LastEditTime: 2020-08-01 22:19:00
 @Description: 
 '''
 
@@ -318,7 +318,7 @@ def match_del(request):
     if "%op%" not in request.session.get('permissions', ''):
         return HttpResponse(dialog('failed', 'danger', '权限不足!'))
     id=request.POST.get('id',None)
-    info=Icon.objects.get(id=id)
+    info=FishMatch.objects.get(id=id)
     
     info.delete()
     return HttpResponse(dialog('ok', 'success', '删除成功!'))
@@ -329,6 +329,62 @@ def match_status(request):
     status=str( request.POST.get('status',None))
     id=request.POST.get('id',None)
     info=Icon.objects.get(id=id)
+    
+    if(status == "True"):
+        info.status=False
+    else:
+        info.status=True
+    info.save()
+    return HttpResponse(dialog('ok', 'success', 'ok!'))
+
+#鱼塘
+def pool(request):
+
+    list=FishPool.objects.all()
+    for i in range(0,len(list)):
+        list[i].type=('','矩形','圆形')[int(list[i].type)]
+        
+
+    return render(request, 'dashboard/fish/pool.html', {"list":list})
+
+def pool_edit(request):
+    name=request.POST.get("name","")
+    if name == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写名称!'))
+    type=request.POST.get("type","")
+    if type == "":
+        return HttpResponse(dialog('failed', 'danger', '清选择类型!'))
+    area=request.POST.get("area","")
+    if area == "":
+        return HttpResponse(dialog('failed', 'danger', '请填写区域!'))
+    
+    _id=request.POST.get("id","")
+    if _id == "":
+        info=FishPool(name=name,type=type,status=1,area=area)
+    else:
+        info=FishPool.objects.get(id=_id)
+        info.type=type
+        info.area=area
+        info.name=name
+    
+    info.save()
+    return HttpResponse(dialog('ok', 'success', '保存成功!'))
+
+def pool_del(request):
+    if "%op%" not in request.session.get('permissions', ''):
+        return HttpResponse(dialog('failed', 'danger', '权限不足!'))
+    id=request.POST.get('id',None)
+    info=FishPool.objects.get(id=id)
+    
+    info.delete()
+    return HttpResponse(dialog('ok', 'success', '删除成功!'))
+
+def pool_status(request):
+    if "%op%" not in request.session.get('permissions', ''):
+        return HttpResponse(dialog('failed', 'danger', '权限不足!'))
+    status=str( request.POST.get('status',None))
+    id=request.POST.get('id',None)
+    info=FishPool.objects.get(id=id)
     
     if(status == "True"):
         info.status=False

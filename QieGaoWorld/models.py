@@ -302,7 +302,7 @@ class FishPool(models.Model):
     type=models.IntegerField() #区域类型  1矩形 2圆形
     area=models.CharField(max_length=200) #区域数据 x1:z1:x2:z2 or x:z:r
     status=models.BooleanField() #是否启用
-    create_time=models.DateTimeField(auto_now_add=True)
+    create_time=models.IntegerField()
 
 class Icon(models.Model):
     name=models.CharField(max_length=100)

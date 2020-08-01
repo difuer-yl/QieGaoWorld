@@ -1,16 +1,16 @@
 {% load static %}
 {% load extras %}
-<h2>鱼赛管理
-    <small style="color: #666666; font-size: medium">Match Manage</small>
+<h2>鱼塘管理
+    <small style="color: #666666; font-size: medium">Pool Manage</small>
     <button class="uk-button uk-button-default uk-button-primary uk-align-right uk-margin-small-top "
-            uk-toggle="target: #info-box" onclick='$("[name=info]")[0].reset()'>新增鱼赛
+            uk-toggle="target: #info-box" onclick='$("[name=info]")[0].reset()'>新增鱼塘
     </button>
     <button class=" add" style="display:none"
-            uk-toggle="target: #info-box" >新增鱼赛
+            uk-toggle="target: #info-box" >新增鱼塘
     </button>
 </h2>
 <hr class="uk-margin" />
-<p class="uk-text-meta">鱼赛列表 </p>
+<p class="uk-text-meta">鱼塘列表 </p>
 <div class="uk-alert-primary" uk-alert id="tips" style="display:none">
     <a class="uk-alert-close" uk-close></a>
     <p></p>
@@ -20,8 +20,8 @@
         <thead>
             <tr>
                 <th class="uk-width-medium">名称</th>
-                <th class="uk-width-small uk-visible@s">爆率</th>
-                <th class="uk-width-small uk-visible@s">颜色</th>
+                <th class="uk-width-small uk-visible@s">名称</th>
+                <th class="uk-width-small uk-visible@s">类型</th>
                 <th class="uk-width-small uk-visible@s">状态</th>
                 <!-- <th class="uk-width-small uk-visible@s">数量</th> -->
                 <th class="uk-width-small uk-visible@s">添加时间</th>
@@ -35,10 +35,7 @@
                     <span class="" >{{ b.name }}</span>
                 </td>
                 <td>
-                    <span class="" >{{ b.chance }}</span>
-                </td>
-                <td>
-                    <span class="" >{{b.color}}</span>
+                    <span class="" >{{ b.type_text }}</span>
                 </td>
                 <td>
                     <span class="" >{{ b.status }}</span>
@@ -47,7 +44,11 @@
                     <span class="" title="" >{{b.create_time}}</span>
                 </td>
                 <td>
-                    <a class="uk-icon-link dryedit edit" id="{{ b.id }}" data-number="{{ b.number}}" data-rew="{{b.reward_id}}" data-mode="{{b.mode}}" data-start="{{b.start_time}}" data-end="{{b.end_time}}" data-relemode="{{b.release_mode}}" data-reletime="{{b.release_time}}" data-name="{{b.name}}" uk-icon="file-edit"></a> 
+                    <a class="uk-icon-link dryedit edit" 
+                    {% for key, val in b|get_fields %}
+                        data-{{ key }}="{{ val }}"
+                    {% endfor %}
+                    uk-icon="file-edit"></a> 
                     <a class=" uk-icon-link star" data-status="{{b.status}}" data-id="{{b.id}}" {% if b.status  %} style="color:royalblue" title="停用"{% else %} title="启用"  {% endif %} uk-icon="star" ></a>
                     <a class="uk-icon-link del" data-id="{{b.id}}" style="color:red" uk-icon="trash"></a>
                 </td>
@@ -68,10 +69,8 @@
 
                     <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center " uk-grid>
                         <div class=""><span class="" >{{ b.name }}</span></div>
-                        <div class=" "><span class="" >{{ b.start_time }}</span></div>
-                        <div class="">
-                        <span class="" >{{ b.type }}</span>
-                        </div>
+                        <div class=""><span class="" >{{ b.type }}</span></div>
+                        <div class=""><span class="" >{{ b.area }}</span></div>
                     </div>
                 </div>
                 <span class="uk-width-auto">
@@ -90,9 +89,6 @@
                     <div>
                         <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center " uk-grid>
                             <div class=" ">
-                                {% for bb in b.fish_set.all %}
-                                <span class="" >{{ bb.name }}</span>
-                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -110,7 +106,7 @@
     
             <button class="uk-modal-close-default" type="button" uk-close></button>
             <div class="uk-modal-header">
-                <h2 class="uk-modal-title">鱼赛</h2>
+                <h2 class="uk-modal-title">鱼塘</h2>
             </div>
             <div class="uk-modal-body">
                 <form class="uk-form-horizontal" name="info" action="" method="POST" enctype="multipart/form-data">
@@ -129,40 +125,25 @@
                     <div class="uk-margin">
                         <div class="uk-grid-small" uk-grid>
                             <div class="uk-width-1-5@s">
-                                <label class="uk-form-label" for="form-horizontal-text">开始时间</label>
+                                <label class="uk-form-label" for="form-horizontal-text">类型</label>
                             </div>
                             <div class="uk-width-4-5@s">
-                                <input type="datetime" name="start_time" id="" class="uk-input">
+                                <select name="type" class="uk-select" id="">
+                                    <option value="1">矩形</option>
+                                    <option value="2">圆形</option>
+                                </select>
                             </div>
                         </div>
                     </div>
                     <div class="uk-margin">
                         <div class="uk-grid-small" uk-grid>
                             <div class="uk-width-1-5@s">
-                                <label class="uk-form-label" for="form-horizontal-text">持续时长（秒）</label>
+                                <label class="uk-form-label" for="form-horizontal-text">区域</label>
+                                
                             </div>
                             <div class="uk-width-4-5@s">
-                                <input type="text" name="length" id="" class="uk-input">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="uk-margin">
-                        <div class="uk-grid-small" uk-grid>
-                            <div class="uk-width-1-5@s">
-                                <label class="uk-form-label" for="form-horizontal-text">使用鱼池 </label>
-                            </div>
-                            <div class="uk-width-4-5@s">
-                                <input class="uk-input" name="pond_id" type="text" >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="uk-margin">
-                        <div class="uk-grid-small" uk-grid>
-                            <div class="uk-width-1-5@s">
-                                <label class="uk-form-label" for="form-horizontal-text">使用鱼塘 </label>
-                            </div>
-                            <div class="uk-width-4-5@s">
-                                <input class="uk-input" name="pool_id" type="text" >
+                                <input type="text" name="area" id="" class="uk-input">
+                                <small>区域数据 x1:z1:x2:z2 or x:z:r</small>
                             </div>
                         </div>
                     </div>
@@ -179,7 +160,7 @@
 <script>
     $(function() {
         $("#save").click(function(){
-            $.post("/fish/match_edit",$("[name=info]").serialize(),function(obj){
+            $.post("/fish/pool_edit",$("[name=info]").serialize(),function(obj){
                 if (obj.status === "ok") {
                     UIkit.notification({
                         message: '<span uk-icon=\'icon: check\'></span> ' + obj.msg,
@@ -210,7 +191,7 @@
             var id = $(this).data("id");
             var _this = $(this);
 
-            $.post("fish/match_del?_=" + Date.parse(new Date()), {
+            $.post("fish/pool_del?_=" + Date.parse(new Date()), {
                 "id": id,
 
             }, function(obj) {
@@ -235,7 +216,7 @@
             var _this = $(this);
             var id=_this.data('id');
             var title=_this.attr("title");
-            $.post("fish/match_status?_=" + Date.parse(new Date()), {
+            $.post("fish/pool_status?_=" + Date.parse(new Date()), {
                 "status": status,
                 "id":id
             }, function(obj) {
