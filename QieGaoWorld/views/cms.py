@@ -325,11 +325,11 @@ def info(request):
         return index(request)
     # book.show_time=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(book.show_time))
     chapter=CmsChapter.objects.filter(book_id=info.book_id)
-    # book=CmsBook.objects.get(id=_id)
+    book=CmsBook.objects.get(id=info.book_id)
     # page=request.POST.get("page",1)
     # paginator = Paginator(chapter, 25)
     # chapter=paginator.get_page(page)
     for i in range(0,len(chapter)):
         chapter[i].show_time=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(chapter[i].show_time))
 
-    return render(request, 'index/cms/info.html', {'permissions': request.session.get("permissions","default"),'book': info,"list":chapter})
+    return render(request, 'index/cms/info.html', {'permissions': request.session.get("permissions","default"),'book': info,"list":chapter,"b":book})

@@ -20,6 +20,9 @@
         <script src="{% static "assets/js/csrf.js" %}"></script>
         <script src="{% static "assets/js/uikit.js" %}"></script>
         <script src="{% static "assets/js/uikit-icons.min.js" %}"></script>
+        <meta itemprop="name" content="【{{b.title}}】{{book.title}}"/>
+        <meta itemprop="image" content="{{b.img}}" />
+        <meta name="description" itemprop="description" content="{{book.content}}" />
         <title>{{book.title}} - 连载</title>
     </head>
     <body style="">
@@ -46,7 +49,7 @@
     <li>
         <div class="user-view">
             <div class="background">
-                <img src="https://qiegaoworld.github.io/qiegaomap/img/qiegao.jpg" alt="">
+                <img src="https://QieGaoWorld.github.io/qiegaomap/img/qiegao.jpg" alt="">
             </div>
             <img class="circle responsive-img" src="/{{request.session.avatar }}" alt="{{request.session.username }}">
             <span class="white-text name">{{request.session.username }}</span>
@@ -74,6 +77,9 @@
 <div class="">
 <a href="/cms/list?id={{book.book_id}}"><span uk-icon="chevron-left"></span> 返回目录</a>
 <hr>
+</div>
+<div style="display: none;">
+    <img src="{{b.img}}" alt="">
 </div>
 <div class="content">
     <div id="controls"> <a href="#" id="small">A</a> <a href="#" id="medium" class="selected">A</a> <a href="#" id="large">A</a> </div>
