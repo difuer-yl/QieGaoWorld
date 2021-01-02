@@ -6,6 +6,6 @@ services:
     command: "python3 manage.py runserver 0.0.0.0:80"
     volumes:
       - .:/code
-      - /qiegao/MCSManager/server/qiegao_1_14_4:/qiegao
+      - /qiegao/MCSManager/server/qiegao_1_16_4:/qiegao
     ports:
       - "80:80"

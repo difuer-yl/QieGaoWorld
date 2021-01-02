@@ -504,7 +504,7 @@ def maps_add(request):
     
     number=int(conf[0].content)
     if not os.path.exists(path+"map_%d.dat"%number):
-        return HttpResponse(dialog('failed', 'danger', '基础地图不存在，请联系管理员修改'+path+"map_%d.dat"%number))
+        return HttpResponse(dialog('failed', 'danger', '基础地图不存在，请联系管理员修改'))
     nbt =NBTFile(path+"map_%d.dat"%number)
     for a in map:
         all_maps_data=a
